@@ -4,6 +4,8 @@ import App from "./App.jsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PageNotFound from "./components/index.js";
+import { store } from './store/store.js'
+import { Provider } from 'react-redux'
 
 const router = createBrowserRouter([
   {
@@ -18,8 +20,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router}>
-      <App />
-    </RouterProvider>
+    <Provider store={store}>
+      <RouterProvider router={router}>
+        <App />
+      </RouterProvider>
+    </Provider>
   </StrictMode>
 );
