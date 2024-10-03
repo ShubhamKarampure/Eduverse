@@ -93,3 +93,22 @@ export const submitAssignment=async(req,res)=>{
         });
     }
 }
+
+export const getAssignmentsByCourseController=async(req,res)=>{
+    try {
+        const {course}=req.headers
+        console.log(course);        
+        const assignments=await AssignmentModel.findOne({course:course})
+        res.status(200).json({
+            success:true,
+            message:"Assignments fetched",
+            assignments
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+        });
+    }
+}
