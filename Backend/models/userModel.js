@@ -26,6 +26,7 @@ const UserSchema=mongoose.Schema({
     },
     branch:{
         type:String,
+        enum:['Computer Engineering','Data Science','Machine Learning','EXTC'],
         required:true,
     },
     enrolledCourses:{

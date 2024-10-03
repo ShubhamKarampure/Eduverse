@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { uploadOnCloud } from "../utils/cloudinary.js";
 
 export const signupController=async (req,res)=>{
     try {
@@ -97,7 +98,7 @@ export const updateProfileController=async(req,res)=>{
             console.log(image);
             const types=['image/jpg','image/png','image/jpeg']            
             if(!types.includes(image.mimetype))
-                return res.json({
+                return res.status(401).json({
                     success:false,
                     message:"Use only png, jpg or jpeg files"
                 }) 
