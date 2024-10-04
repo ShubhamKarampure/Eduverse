@@ -1,11 +1,13 @@
 import { CourseModel } from "../models/courseModel.js";
 import { AssignmentModel } from "../models/assignmentModel.js";
 import { uploadOnCloud } from "../utils/cloudinary.js";
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const createAssignmentController=async(req,res)=>{
     try {
-        const {deadline,course,description}=req.body
-        if(!deadline || !course || !description)
+        const {deadline,course,description,criteria}=req.body
+        if(!deadline || !course || !description || !criteria)
             return res.status(401).json({
                 success:false,
                 message:"Enter all fields"
@@ -103,6 +105,38 @@ export const getAssignmentsByCourseController=async(req,res)=>{
             success:true,
             message:"Assignments fetched",
             assignments
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+        });
+    }
+}
+
+export const gradeAssignmentController=async(req,res)=>{
+    try {
+        const {assignmentId}=req.params.id
+        const {studentId}=req.body
+        const assignment= await AssignmentModel.findById(assignmentId)
+        const criteria=assignment.criteria
+        const submission=assignment.submissions.find((submission)=>submission.student==studentId)
+        const url=submission.submission
+        const response=await axios.post(process.env.FLASK_URL,{url,criteria},{
+            headers:{
+                "content-type":"application/json",
+            },
+            credentials:true
+        })
+        const evaluation=response.data
+        submission.grade=response.data.grade
+        assignment.save()
+        res.status(200).json({
+            success:true,
+            message:"Assignment evaluated successfully",
+            evaluation,
+            assignment
         })
     } catch (error) {
         console.log(error)
