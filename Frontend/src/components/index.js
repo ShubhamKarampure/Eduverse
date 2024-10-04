@@ -1,5 +1,9 @@
-import PageNotFound from "../../../../Study-Notion-EdTech__MERN-Stack/frontend/src/pages/PageNotFound";
+import Navbar from "./Navbar";
+import PageNotFound from "./PageNotFound";
+import SquishyCard from "./CourseCard";
 
-export default (
-    PageNotFound
-)
+export {
+    PageNotFound,
+    Navbar,
+    SquishyCard
+}
