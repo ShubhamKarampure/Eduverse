@@ -123,7 +123,7 @@ export const gradeAssignmentController=async(req,res)=>{
         const criteria=assignment.criteria
         const submission=assignment.submissions.find((submission)=>submission.student==studentId)
         const pdf_url=submission.submission
-        
+        console.log({pdf_url,criteria});        
         const response=await axios.post(`${process.env.FLASK_URL}/upload`,{pdf_url,criteria},{
             headers:{
                 "Content-type":"application/json",
