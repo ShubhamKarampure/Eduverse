@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PageNotFound } from "./components/index.js";
 import { ChakraProvider } from '@chakra-ui/react'
 import Home from "./pages/Student/Home.jsx";
+import Courses from "./pages/Student/Courses.jsx";
 
 const router = createBrowserRouter([
   {
@@ -19,9 +20,10 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <Home />,
-    children: [
-
-    ],
+    children: [{
+      path: "/home",
+      element: <Courses />,
+    }],
     errorElement: <PageNotFound />,
   },
 ]);
