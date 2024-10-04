@@ -7,13 +7,12 @@ module.exports = {
       inter: ["Inter", "sans-serif"],
       "edu-sa": ["Edu SA Beginner", "cursive"],
       mono: ["Roboto Mono", "monospace"],
-      boogaloo: ["Boogaloo", "sans-serif"],
+      boogaloo: ['Boogaloo', "sans-serif"]
     },
-
     extend: {
       maxWidth: {
         maxContent: "1260px",
-        maxContentTab: "650px",
+        maxContentTab: "650px"
       },
       colors: {
         white: "#fff",
