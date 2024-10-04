@@ -1,4 +1,4 @@
-import PageNotFound from "../../../../Study-Notion-EdTech__MERN-Stack/frontend/src/pages/PageNotFound";
+import PageNotFound from "./PageNotFound";
 
 export default (
     PageNotFound

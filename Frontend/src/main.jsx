@@ -4,15 +4,20 @@ import App from "./App.jsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PageNotFound from "./components/index.js";
-import { store } from './store/store.js'
-import { Provider } from 'react-redux'
+import { ChakraProvider } from "@chakra-ui/react";
+import {ViewTeacherCourse} from "./pages/index.js";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      
+      { 
+        path: "/teacher/:teacherId", 
+        element: <ViewTeacherCourse /> }, 
+      {
+
+      }
     ],
     errorElement: <PageNotFound />,
   },
@@ -20,10 +25,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router}>
+    <RouterProvider router={router}>
+      <ChakraProvider>
         <App />
-      </RouterProvider>
-    </Provider>
+      </ChakraProvider>
+    </RouterProvider>
   </StrictMode>
 );
