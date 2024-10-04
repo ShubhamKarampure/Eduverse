@@ -98,37 +98,17 @@ def quiz():
     data = request.get_json()
 
     # Check if required fields are present
-    if not data or 'pdf_url' not in data:
-        return jsonify({"error": "Missing 'pdf_url' in the request."}), 400
+    if not data or 'description' not in data:
+        return jsonify({"error": "Missing 'description' in the request."}), 400
 
-    pdf_url = data['pdf_url']
-
-    # Download the PDF from the given URL
-
-    try:
-        # Download the PDF content
-        response = requests.get(pdf_url)
-        response.raise_for_status()  # Ensure the request was successful
-        
-        # Load the PDF content into memory using BytesIO
-        file = BytesIO(response.content)
-        
-        # Use PyPDF2 to read and extract text from the PDF
-        reader = PdfReader(file)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text() or ""  # Extract text from each page
-        text
-    except requests.exceptions.RequestException as e:
-        return f"Failed to download PDF: {str(e)}"
-    except Exception as e:
-        return f"Failed to extract text from PDF: {str(e)}"
-
+    text = data['description']
     # Create a prompt with the criteria
     prompt = f"""
-    Generate one multiple-choice question based on the provided text: {text}. Provide exactly four options labeled "a", "b", "c", and "d". The answer should be one of the four options: "a", "b", "c", or "d". 
+    Generate five multiple-choice questions based on the provided topics mentioned in following desciption {text}. For each question, provide exactly four options labeled "a", "b", "c", and "d". The answer should be one of the four options: "a", "b", "c", or "d". 
 
-    Output the result in valid JSON format with double quotes around all keys and values. The JSON format is:
+    Output the result in valid JSON format with double quotes around all keys and values. The JSON format should be an array of question objects, as follows:
+
+    [
     {{
         "question": "Question text",
         "options": {{
@@ -138,7 +118,19 @@ def quiz():
             "d": "Option D text"
         }},
         "answer": "Correct answer (a, b, c, or d)"
-    }}
+    }},
+    {{
+        "question": "Question text 2",
+        "options": {{
+            "a": "Option A text 2", 
+            "b": "Option B text 2", 
+            "c": "Option C text 2", 
+            "d": "Option D text 2"
+        }},
+        "answer": "Correct answer 2 (a, b, c, or d)"
+    }},
+    ...
+    ]
     """
 
     # Create a completion request to grade the assignment
