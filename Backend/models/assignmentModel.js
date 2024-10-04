@@ -13,12 +13,17 @@ const AssignmentSchema=mongoose.Schema({
         type:Date,
         required:true,
     },
+    criteria:{
+        type:[String],
+        required:true
+    },
     submissions:{
         type:[{
             student:mongoose.Types.ObjectId,
             submission:String,
             submissionDate:Date,
-            late:Boolean
+            late:Boolean,
+            grade:Number,
         }]
     },
 })
