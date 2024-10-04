@@ -9,12 +9,9 @@ const Home = () => {
 
     return (
         <div className='flex h-screen'>
-            {/* Sidebar */}
             <div className='sticky top-0 h-screen shrink-0'>
                 <Example />
             </div>
-
-            {/* Main Content */}
             <div className='flex-1 w-full overflow-y-auto'>
                 <div className='flex flex-col'>
                     <Navbar />

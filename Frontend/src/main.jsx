@@ -12,24 +12,13 @@ import Courses from "./pages/Student/Courses.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-    children: [
-      , 
-      {
-
-      }
-    ],
-    errorElement: <PageNotFound />,
-  },
-  {
-    path: "/home",
     element: <Home />,
     children: [
       { 
-        path: "/home/teacher/:teacherId", 
+        path: "/teacher/:teacherId", 
         element: <ViewTeacherCourse /> 
       },{
-      path: "/home",
+      path: "/",
       element: <Courses />,
     }],
     errorElement: <PageNotFound />,
