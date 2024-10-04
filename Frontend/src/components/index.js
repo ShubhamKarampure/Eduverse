@@ -1,5 +1,7 @@
-import PageNotFound from "../../../../Study-Notion-EdTech__MERN-Stack/frontend/src/pages/PageNotFound";
+import Navbar from "./Navbar";
+import PageNotFound from "./PageNotFound";
 
-export default (
-    PageNotFound
-)
+export {
+    PageNotFound,
+    Navbar
+}
