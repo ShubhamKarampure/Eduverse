@@ -2,7 +2,7 @@ import express from 'express'
 import { signupController,loginController,updateProfileController } from "../controllers/userControllers.js";
 import fileUpload from 'express-fileupload'
 import {  getAssignmentsByCourseController } from '../controllers/assignmentControllers.js';
-
+import { getAllCoursesByBranchController } from '../controllers/courseControllers.js';
 const router=express.Router()
 
 router.route('/signup').post(signupController)
@@ -12,5 +12,5 @@ router.route('/:id').patch(fileUpload({
     tempFileDir: 'C:/Windows/Temp'
 }),updateProfileController)
 router.route('/assignments').get(getAssignmentsByCourseController)
-
+router.route('/courses').get(getAllCoursesByBranchController)
 export const userRouter=router
