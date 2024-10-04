@@ -93,7 +93,7 @@ const Home = () => {
                     </div>
 
                     {/* New Section below Carousel */}
-                    <div className='bg-red-400 w-full'>
+                    <div className='w-full'>
                         <SquishyCard />
                         <SquishyCard />
                         <SquishyCard />
