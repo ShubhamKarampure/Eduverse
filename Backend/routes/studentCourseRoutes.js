@@ -3,7 +3,7 @@ import { enrollStudentController, getAllCoursesByBranchController} from '../cont
 
 const router=express.Router()
 
-router.route('/').get(getAllCoursesByBranchController)
+
 router.route('/:id').post(enrollStudentController)
 
 export const studentCourseRouter = router

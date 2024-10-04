@@ -2,6 +2,7 @@ import { CourseModel } from "../models/courseModel.js";
 import { AssignmentModel } from "../models/assignmentModel.js";
 import { uploadOnCloud } from "../utils/cloudinary.js";
 import dotenv from 'dotenv'
+import axios from 'axios'
 dotenv.config()
 
 export const createAssignmentController=async(req,res)=>{
@@ -100,7 +101,7 @@ export const getAssignmentsByCourseController=async(req,res)=>{
     try {
         const {course}=req.headers
         console.log(course);        
-        const assignments=await AssignmentModel.findOne({course:course})
+        const assignments=await AssignmentModel.find({course:course})
         res.status(200).json({
             success:true,
             message:"Assignments fetched",
@@ -117,15 +118,15 @@ export const getAssignmentsByCourseController=async(req,res)=>{
 
 export const gradeAssignmentController=async(req,res)=>{
     try {
-        const {assignmentId}=req.params.id
-        const {studentId}=req.body
+        const {studentId,assignmentId}=req.body
         const assignment= await AssignmentModel.findById(assignmentId)
         const criteria=assignment.criteria
         const submission=assignment.submissions.find((submission)=>submission.student==studentId)
-        const url=submission.submission
-        const response=await axios.post(process.env.FLASK_URL,{url,criteria},{
+        const pdf_url=submission.submission
+        
+        const response=await axios.post(`${process.env.FLASK_URL}/upload`,{pdf_url,criteria},{
             headers:{
-                "content-type":"application/json",
+                "Content-type":"application/json",
             },
             credentials:true
         })
