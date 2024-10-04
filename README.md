@@ -25,3 +25,17 @@ npm i
 ```
 node server.js
 ```
+
+# To run FlaskApi
+
+```
+cd FlaskAPI
+```
+
+```
+pip install -r requirements.txt
+```
+
+```
+python app.py
+```
