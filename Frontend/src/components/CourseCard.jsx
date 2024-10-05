@@ -29,7 +29,14 @@ const SquishyCard = ({
 }) => {
   return (
     <section className="px-4 py-12">
-      <div className="mx-auto w-fit">
+      <motion.div
+        className="carousel-container"
+        style={{ display: "flex", overflowX: "auto", cursor: "grab" }}
+        whileTap={{ cursor: "grabbing" }}
+        drag="x"
+        dragConstraints={{ left: -300, right: 300 }}
+        dragElastic={0.2}
+      >
         <Card
           name={name}
           branch={branch}
@@ -40,7 +47,8 @@ const SquishyCard = ({
           enrollmentKey={enrollmentKey}
           background={background}
         />
-      </div>
+        {/* Add more cards as needed */}
+      </motion.div>
     </section>
   );
 };
@@ -79,7 +87,7 @@ const Card = ({
 
   const clickHandler = () => {
     if (enrollmentSuccess || user.role.toLowerCase() === "teacher") {
-      navigate(`/mycourses/${courseId}`);
+      navigate(`/course-details/${courseId}`);
     } else {
       setIsOpen(true);
     }
@@ -139,16 +147,17 @@ const Card = ({
           },
         }}
         className="relative h-96 w-80 shrink-0 overflow-hidden rounded-xl bg-indigo-500 p-8"
+        style={{ marginRight: '20px' }} // Add some margin for spacing
       >
         <div
-                className="absolute inset-0"
-                style={{
-                    backgroundImage: `url(${background})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    filter: "blur(1px)", // Apply blur to the background image
-                }}
-            ></div>
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${background})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(1px)", // Apply blur to the background image
+          }}
+        ></div>
 
         <div className="relative z-10 text-white">
           <span className="mb-3 block w-fit rounded-full bg-white/30 px-3 py-0.5 text-sm font-light text-white">
@@ -229,7 +238,6 @@ const Card = ({
     </>
   );
 };
-
 
 const Background = () => {
   return (

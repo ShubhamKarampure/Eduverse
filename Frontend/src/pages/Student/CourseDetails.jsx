@@ -103,7 +103,7 @@ export default function CoursePage() {
                     />
                 </Box>
             </SimpleGrid>
-            <Button color={'teal'} onClick={() => handleTakeQuiz(id)}>Take Quiz</Button>
+            <Button my={6} color={'teal'} onClick={() => handleTakeQuiz(id)}>Take Quiz</Button>
             <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
                 {assignments.map((item, index) => (
                     <Card key={index} display="flex" flexDirection="column" height="100%">
@@ -117,7 +117,7 @@ export default function CoursePage() {
                                     <Badge colorScheme="gray" key={index}>{c}</Badge>
                                 ))}
                             </HStack>
-                            <Text className='font-semibold'>Deadline: {item.deadline.toString().slice(0, 10)}</Text>
+                            <Text className='font-semibold text-sm'>Deadline: {item.deadline.toString().slice(0, 10)}</Text>
                             {/* Spacer to push the input to the bottom */}
                             <Box flexGrow={1}></Box>
 
