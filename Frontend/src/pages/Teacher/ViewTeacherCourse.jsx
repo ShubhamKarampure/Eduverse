@@ -10,8 +10,12 @@ const ViewTeacherCourse = () => {
   const [courses, setCourses] = useState([]);
   const user = JSON.parse(localStorage.getItem('user'));
   const navigate=useNavigate()
+
   useEffect(() => {
     const fetchCourses = async () => {
+      if(user.role.toLowerCase()==='student'){
+        navigate('/')
+      }
       try {
         const response = await axios.get(`${getAllCoursesByInstructor}`, {
           headers: {
