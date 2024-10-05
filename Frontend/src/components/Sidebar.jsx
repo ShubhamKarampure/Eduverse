@@ -15,6 +15,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { MdOutlineMenuBook } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useToast } from '@chakra-ui/react';
 
 export const Example = () => {
     return (

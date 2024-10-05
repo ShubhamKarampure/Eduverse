@@ -12,6 +12,7 @@ import Login from "./pages/Auth/Login.jsx";
 import MyCourses from "./pages/Student/MyCourses.jsx";
 import Calendar from "./pages/Student/Calendar.jsx";
 import Quiz from "./pages/Student/Quiz.jsx";
+import IndividualCourse from "./pages/IndividualCourse.jsx";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,9 @@ const router = createBrowserRouter([
       }, {
         path: '/quiz',
         element: <Quiz />
+      },{
+        path: '/mycourses/:courseId',
+        element: <IndividualCourse/>
       }
     ],
     errorElement: <PageNotFound />

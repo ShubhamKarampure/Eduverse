@@ -59,7 +59,7 @@ const Courses = () => {
                     {
                         courses.map((course, index) => {
                             return (
-                                <SquishyCard name={course.name} description={course.description} branch={course.branch} studentId={user._id} students={course.students} key={index} />
+                                <SquishyCard name={course.name} description={course.description} branch={course.branch} studentId={user._id} students={course.students} key={index} courseId={course._id} Key={course.enrollmentKey}/>
                             )
                         })
                     }
