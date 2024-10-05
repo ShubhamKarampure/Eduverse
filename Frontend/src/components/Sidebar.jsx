@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import {
-    FiBarChart,
     FiChevronDown,
     FiChevronsRight,
-    FiDollarSign,
     FiHome,
-    FiMonitor,
-    FiShoppingCart,
-    FiTag,
-    FiUsers,
 } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { MdAssignment } from "react-icons/md";
@@ -71,7 +65,7 @@ const Sidebar = () => {
                         />
                     </Link>
                 }
-                <Link>
+                <Link to={'/calendar'}>
                     <Option
                         Icon={FaCalendarAlt}
                         title="Calender"
