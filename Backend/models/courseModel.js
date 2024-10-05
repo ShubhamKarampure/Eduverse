@@ -22,6 +22,14 @@ const CourseSchema=new mongoose.Schema({
         type:String,
         required:true,
     },
+    image: {
+        url: {
+            type: String,
+        },
+        publicId: {
+            type: String,
+        }
+    },
     students:{
         type:[mongoose.Types.ObjectId],
         default:[]

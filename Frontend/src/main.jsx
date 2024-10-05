@@ -11,6 +11,7 @@ import Register from "./pages/Auth/Register.jsx";
 import Login from "./pages/Auth/Login.jsx";
 import MyCourses from "./pages/Student/MyCourses.jsx";
 import Calendar from "./pages/Student/Calendar.jsx";
+import Quiz from "./pages/Student/Quiz.jsx";
 
 const router = createBrowserRouter([
   {
@@ -23,12 +24,15 @@ const router = createBrowserRouter([
       }, {
         path: "/",
         element: <Courses />,
-      },{
-        path:'/mycourses',
+      }, {
+        path: '/mycourses',
         element: <MyCourses />,
       },{
         path: '/calendar',
         element: <Calendar/>
+      }, {
+        path: '/quiz',
+        element: <Quiz />
       }
     ],
     errorElement: <PageNotFound />

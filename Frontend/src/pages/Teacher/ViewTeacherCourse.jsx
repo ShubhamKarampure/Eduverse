@@ -1,45 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Navbar } from "../../components/index.js";
-import { Example } from "../../components/Sidebar.jsx";
 import { SquishyCard } from "../../components/index.js";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
+import { getAllCoursesByInstructor } from "../../APIRoutes/index.js";
 
 const ViewTeacherCourse = () => {
   const [courses, setCourses] = useState([]);
+  const user = JSON.parse(localStorage.getItem('user'));
   const navigate=useNavigate()
   useEffect(() => {
-    const storedCourses = localStorage.getItem("teacherCourses");
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      if (user.role.toLowerCase() === "student") {
-        navigate("/");
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(`${getAllCoursesByInstructor}`, {
+          headers: {
+            "instructorid": `${user._id}`
+          }
+        });
+        if (response.data.success) {
+          setCourses(response.data.courses);
+          localStorage.setItem('teacher-courses', JSON.stringify(response.data.courses));
+        }
+      } catch (error) {
+        console.log(error);
       }
-      if (storedCourses) {
-        setCourses(storedCourses);
-      } else {
-        axios
-          .get(
-            String(import.meta.env.VITE_BACKEND_URL) +
-              "/api/v1/user/teacher/course",
-            {
-              headers: {
-                instructorid: user._id,
-              },
-            }
-          )
-          .then((res) => {
-            console.log(res);
-            setCourses(res.data.courses);
-            
-          })
-          .catch((e) => console.log(e));
-      }
-    } else {
-      navigate('login')
     }
-  }, []);
+    fetchCourses();
+  }, [])
   const carouselRef = useRef(null);
 
   // Scroll function
@@ -58,7 +46,7 @@ const ViewTeacherCourse = () => {
           className="absolute left-0 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-200"
           onClick={() => scroll("left")}
         >
-          <FiChevronLeft size={24} />
+          <FiChevronLeft size={24} className="text-black" />
         </button>
 
         {/* Carousel container */}
@@ -83,7 +71,7 @@ const ViewTeacherCourse = () => {
           className="absolute top-0 right-0 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-200"
           onClick={() => scroll("right")}
         >
-          <FiChevronRight size={24} />
+          <FiChevronRight size={24} className="text-black" />
         </button>
       </div>
     </div>

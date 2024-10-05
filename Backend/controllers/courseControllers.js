@@ -1,57 +1,131 @@
 import { CourseModel } from "../models/courseModel.js";
 import { AssignmentModel } from "../models/assignmentModel.js";
+import { uploadOnCloud } from "../utils/cloudinary.js";
 import bcrypt from 'bcrypt'
 import axios from 'axios'
 import { UserModel } from "../models/userModel.js";
+import { request } from "express";
 
 export const createCourseController = async (req, res) => {
     try {
-        const { name, branch, description, instructor, enrollmentKey } = req.body
-        if (!name || !branch || !description || !instructor || !enrollmentKey)
+        const { name, branch, description, instructor, enrollmentKey } = req.body;
+
+        if (!name || !branch || !description || !instructor || !enrollmentKey) {
             return res.status(400).json({
                 success: false,
                 message: "Please enter all fields"
-            })
-        const branches = ['Computer Engineering', 'Data Science', 'Machine Learning', 'EXTC']
-        if (!branches.includes(branch))
+            });
+        }
+
+        const branches = ['Computer Engineering', 'Data Science', 'Machine Learning', 'EXTC'];
+        if (!branches.includes(branch)) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid branch"
-            })
-        const hashedKey = await bcrypt.hash(enrollmentKey, 10)
-        req.body.enrollmentKey = hashedKey
-        const course = await CourseModel.create(req.body)
+            });
+        }
+
+        const hashedKey = await bcrypt.hash(enrollmentKey, 10);
+        req.body.enrollmentKey = hashedKey;
+
+        let imageData = {
+            url: null,
+            publicId: null,
+        };
+
+        if (req.files) {
+            const { image } = req.files;
+
+            console.log(image);
+
+            const types = ['image/jpg', 'image/png', 'image/jpeg'];
+            if (!types.includes(image.mimetype)) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Use only png, jpg or jpeg files"
+                });
+            }
+
+            const img = await uploadOnCloud(image.tempFilePath);
+            imageData.url = img.url;
+            imageData.publicId = img.public_id;
+        }
+
+        const course = await CourseModel.create({
+            ...req.body,
+            image: imageData, 
+        });
+
         res.status(201).json({
             success: true,
             message: "Course created successfully",
             course
-        })
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
             success: false,
             message: "Internal server error"
-        })
+        });
     }
 }
 
 export const updateCourseController = async (req, res) => {
     try {
-        const id = req.params.id
-        const newCourse = await CourseModel.findOneAndUpdate(id, req.body, { new: true })
-        res.status(201).json({
+        const id = req.params.id;
+
+        let imageData = null;
+        console.log(req.files)
+        if (req.files) {
+            const { image } = req.files;
+
+            console.log(image);
+
+            const types = ['image/jpg', 'image/png', 'image/jpeg'];
+            if (!types.includes(image.mimetype)) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Use only png, jpg or jpeg files"
+                });
+            }
+
+            const img = await uploadOnCloud(image.tempFilePath);
+            imageData = {
+                url: img.url,
+                publicId: img.public_id,
+            };
+        }
+
+        const updatedCourse = await CourseModel.findOneAndUpdate(
+            { _id: id }, 
+            {
+                ...req.body,
+                ...(imageData && { image: imageData }), 
+            },
+            { new: true }
+        );
+
+        if (!updatedCourse) {
+            return res.status(404).json({
+                success: false,
+                message: "Course not found"
+            });
+        }
+
+        res.status(200).json({
             success: true,
             message: "Course updated successfully",
-            newCourse
-        })
+            updatedCourse
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
             success: false,
             message: "Internal server error"
-        })
+        });
     }
 }
+
 
 export const deleteCourseController = async (req, res) => {
     try {
@@ -165,6 +239,31 @@ export const generateQuizController = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Generated quiz",
+            course,
+            quiz: response.data.questions
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+export const getCourseById = async (req, res) => {
+    try {
+        const courseId = req.params.id;
+        const course = await CourseModel.findById(courseId);
+        if (!course) {
+            return res.status(404).json({
+                success: false,
+                message: "Course not found"
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: "Course found",
             course
         })
     } catch (error) {
@@ -175,5 +274,6 @@ export const generateQuizController = async (req, res) => {
         })
     }
 }
+
 
 
