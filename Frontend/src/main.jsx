@@ -11,6 +11,7 @@ import Courses from "./pages/Student/Courses.jsx";
 import Register from "./pages/Auth/Register.jsx";
 import Login from "./pages/Auth/Login.jsx";
 import MyCourses from "./pages/Student/MyCourses.jsx";
+import Quiz from "./pages/Student/Quiz.jsx";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,14 @@ const router = createBrowserRouter([
       }, {
         path: "/",
         element: <Courses />,
-      }],
+      }, {
+        path: '/mycourses',
+        element: <MyCourses />,
+      }, {
+        path: '/quiz',
+        element: <Quiz />
+      }
+    ],
     errorElement: <PageNotFound />
   },
   {
@@ -41,22 +49,7 @@ const router = createBrowserRouter([
 
     ],
     errorElement: <PageNotFound />,
-  },
-  {
-    path: "/home",
-    element: <Home />,
-    children: [
-      {
-        path: "/home",
-        element: <Courses />,
-      },
-      {
-        path: "/home/mycourses",
-        element: <MyCourses />,
-      },
-    ],
-    errorElement: <PageNotFound />,
-  },
+  }
 ]);
 
 createRoot(document.getElementById("root")).render(

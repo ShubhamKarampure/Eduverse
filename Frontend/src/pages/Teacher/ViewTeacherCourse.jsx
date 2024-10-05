@@ -1,22 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Navbar } from "../../components/index.js";
-import { Example } from "../../components/Sidebar.jsx";
 import { SquishyCard } from "../../components/index.js";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Outlet, useParams } from "react-router-dom";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import { getAllCoursesByInstructor } from "../../APIRoutes/index.js";
 
 const ViewTeacherCourse = () => {
   const [courses, setCourses] = useState([]);
+  const user = JSON.parse(localStorage.getItem('user'));
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get()
+        const response = await axios.get(`${getAllCoursesByInstructor}`, {
+          headers: {
+            "instructorid": `${user._id}`
+          }
+        });
+        if (response.data.success) {
+          setCourses(response.data.courses);
+          localStorage.setItem('teacher-courses', JSON.stringify(response.data.courses));
+        }
       } catch (error) {
-
+        console.log(error);
       }
     }
+    fetchCourses();
   }, [])
   const carouselRef = useRef(null);
 

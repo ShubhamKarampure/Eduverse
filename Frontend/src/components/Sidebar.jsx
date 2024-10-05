@@ -28,7 +28,7 @@ export const Example = () => {
 const Sidebar = () => {
     const [open, setOpen] = useState(true);
     const [selected, setSelected] = useState("Dashboard");
-
+    const user = JSON.parse(localStorage.getItem('user'));
     return (
         <motion.nav
             layout
@@ -40,7 +40,7 @@ const Sidebar = () => {
             <TitleSection open={open} />
 
             <div className="space-y-1">
-                <Link to={'/home'}>
+                <Link to={`${user.role === "Student" ? "/" : "/teacher"}`}>
                     <Option
                         Icon={FiHome}
                         title="Dashboard"
@@ -59,15 +59,17 @@ const Sidebar = () => {
                         notifs={3}
                     />
                 </Link>
-                <Link to={'/home/mycourses'}>
-                    <Option
-                        Icon={MdOutlineMenuBook}
-                        title="My Courses"
-                        selected={selected}
-                        setSelected={setSelected}
-                        open={open}
-                    />
-                </Link>
+                {
+                    user.role === "Student" && <Link to={'/mycourses'}>
+                        <Option
+                            Icon={MdOutlineMenuBook}
+                            title="My Courses"
+                            selected={selected}
+                            setSelected={setSelected}
+                            open={open}
+                        />
+                    </Link>
+                }
                 <Link>
                     <Option
                         Icon={FaCalendarAlt}
