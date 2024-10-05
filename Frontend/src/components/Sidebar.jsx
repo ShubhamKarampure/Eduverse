@@ -10,11 +10,13 @@ import {
     FiTag,
     FiUsers,
 } from "react-icons/fi";
+import { CgProfile } from "react-icons/cg";
 import { MdAssignment } from "react-icons/md";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdOutlineMenuBook } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useToast } from '@chakra-ui/react';
 
 export const Example = () => {
     return (
@@ -40,7 +42,7 @@ const Sidebar = () => {
             <TitleSection open={open} />
 
             <div className="space-y-1">
-                <Link to={`${user.role === "Student" ? "/" : "/teacher"}`} >
+                <Link to={`${user.role === "Student" ? "/home" : "/home/teacher"}`} >
                     <Option
                         Icon={FiHome}
                         title="Dashboard"
@@ -60,7 +62,7 @@ const Sidebar = () => {
                     />
                 </Link>
                 {
-                    user.role === "Student" && <Link to={'/mycourses'}>
+                    user.role === "Student" && <Link to={'/home/mycourses'}>
                         <Option
                             Icon={MdOutlineMenuBook}
                             title="My Courses"
@@ -74,6 +76,15 @@ const Sidebar = () => {
                     <Option
                         Icon={FaCalendarAlt}
                         title="Calender"
+                        selected={selected}
+                        setSelected={setSelected}
+                        open={open}
+                    />
+                </Link>
+                <Link to={'/home/profile'}>
+                    <Option
+                        Icon={CgProfile}
+                        title="Profile"
                         selected={selected}
                         setSelected={setSelected}
                         open={open}
