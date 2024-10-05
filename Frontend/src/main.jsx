@@ -23,7 +23,11 @@ const router = createBrowserRouter([
       }, {
         path: "/",
         element: <Courses />,
-      }],
+      },{
+        path:'/mycourses',
+        element: <MyCourses />,
+      }
+    ],
     errorElement: <PageNotFound />
   },
   {
@@ -41,22 +45,7 @@ const router = createBrowserRouter([
 
     ],
     errorElement: <PageNotFound />,
-  },
-  {
-    path: "/home",
-    element: <Home />,
-    children: [
-      {
-        path: "/home",
-        element: <Courses />,
-      },
-      {
-        path: "/home/mycourses",
-        element: <MyCourses />,
-      },
-    ],
-    errorElement: <PageNotFound />,
-  },
+  }
 ]);
 
 createRoot(document.getElementById("root")).render(

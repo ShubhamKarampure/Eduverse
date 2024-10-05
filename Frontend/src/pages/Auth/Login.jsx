@@ -36,7 +36,7 @@ const Login = () => {
                 });
                 localStorage.setItem('token', JSON.stringify(response.data.token));
                 localStorage.setItem('user', JSON.stringify(response.data.user));
-                navigate('/home');
+                navigate('/');
                 setLoading(false);
             }
         } catch (error) {

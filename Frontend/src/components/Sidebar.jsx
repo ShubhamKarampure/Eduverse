@@ -40,7 +40,7 @@ const Sidebar = () => {
             <TitleSection open={open} />
 
             <div className="space-y-1">
-                <Link to={'/home'}>
+                <Link to={'/'}>
                     <Option
                         Icon={FiHome}
                         title="Dashboard"
@@ -59,7 +59,7 @@ const Sidebar = () => {
                         notifs={3}
                     />
                 </Link>
-                <Link to={'/home/mycourses'}>
+                <Link to={'/mycourses'}>
                     <Option
                         Icon={MdOutlineMenuBook}
                         title="My Courses"

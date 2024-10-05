@@ -10,7 +10,7 @@ import { getAllCoursesByBranchRoute } from '../../APIRoutes/index.js';
 const Courses = () => {
     const [courses, setCourses] = useState([]);
     const user = JSON.parse(localStorage.getItem('user'));
-    const branch = user.branch;
+    const branch = user?.branch;
     console.log(branch)
     useEffect(() => {
         const fetchCourses = async () => {
