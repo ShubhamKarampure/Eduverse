@@ -27,6 +27,7 @@ export default function CoursePage() {
     const user = JSON.parse(localStorage.getItem('user'));
     const [assignments, setAssignments] = useState([]);
     const [file, setFile] = useState(null);
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
@@ -77,6 +78,10 @@ export default function CoursePage() {
                 <Heading>Course not found</Heading>
             </Container>
         );
+    }
+
+    const handleTakeQuiz = (id_) => {
+        navigate(`/home/quiz/${id_}`)
     }
 
     return (
