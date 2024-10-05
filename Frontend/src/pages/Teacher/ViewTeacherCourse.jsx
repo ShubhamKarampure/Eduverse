@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { SquishyCard } from "../../components/index.js";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 import { getAllCoursesByInstructor } from "../../APIRoutes/index.js";
@@ -9,8 +9,13 @@ import { getAllCoursesByInstructor } from "../../APIRoutes/index.js";
 const ViewTeacherCourse = () => {
   const [courses, setCourses] = useState([]);
   const user = JSON.parse(localStorage.getItem('user'));
+  const navigate=useNavigate()
+
   useEffect(() => {
     const fetchCourses = async () => {
+      if(user.role.toLowerCase()==='student'){
+        navigate('/')
+      }
       try {
         const response = await axios.get(`${getAllCoursesByInstructor}`, {
           headers: {
