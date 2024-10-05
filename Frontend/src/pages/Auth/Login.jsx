@@ -36,7 +36,11 @@ const Login = () => {
                 });
                 localStorage.setItem('token', JSON.stringify(response.data.token));
                 localStorage.setItem('user', JSON.stringify(response.data.user));
-                navigate('/home');
+                if (response.data.user.role === "Student") {
+                    navigate('/home');
+                } else {
+                    navigate('/teacher')
+                }
                 setLoading(false);
             }
         } catch (error) {
