@@ -40,7 +40,7 @@ const Sidebar = () => {
             <TitleSection open={open} />
 
             <div className="space-y-1">
-                <Link to={`${user.role === "Student" ? "/" : "/teacher"}`}>
+                <Link to={`${user.role === "Student" ? "/" : "/teacher"}`} >
                     <Option
                         Icon={FiHome}
                         title="Dashboard"

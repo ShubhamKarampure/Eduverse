@@ -108,7 +108,7 @@ def quiz():
 
     Output the result in valid JSON format with double quotes around all keys and values. The JSON format should be an array of question objects, as follows:
 
-    [
+    quiz:[
     {{
         "question": "Question text",
         "options": {{
