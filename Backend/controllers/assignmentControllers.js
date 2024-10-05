@@ -170,13 +170,9 @@ export const getAssignmentsByCourseController = async (req, res) => {
 export const gradeAssignmentController = async (req, res) => {
     try {
         const studentId = req.headers.studentid;
-        console.log(studentId)
         const assignmentId = req.headers.assignmentid;
-        console.log(assignmentId)
         const assignment = await AssignmentModel.findById(assignmentId)
-        console.log(assignment)
         const criteria = assignment.criteria
-        console.log(criteria)
         const submission = assignment.submissions.find((submission) => submission.student == studentId)
         const pdf_url = submission.submission
         console.log({ pdf_url, criteria });
@@ -188,12 +184,11 @@ export const gradeAssignmentController = async (req, res) => {
         })
         const evaluation = response.data
         submission.grade = response.data.grade
-        assignment.save()
+        await assignment.save()
         res.status(200).json({
             success: true,
             message: "Assignment evaluated successfully",
             evaluation,
-            assignment
         })
     } catch (error) {
         console.log(error)
