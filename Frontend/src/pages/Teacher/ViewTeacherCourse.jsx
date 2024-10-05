@@ -10,8 +10,8 @@ import { Navigate } from "react-router-dom";
 const ViewTeacherCourse = () => {
   const [courses, setCourses] = useState([]);
   useEffect(() => {
-    const storedCourses = localStorage.getItem("teacherCourses");
-    const user = localStorage.getItem("user");
+    const storedCourses =JSON.parse(localStorage.getItem("teacherCourses"));
+    const user =JSON.parse(localStorage.getItem("user"));
     if (user) {
       if (user.role.toLowerCase() === "Student") {
         Navigate("/");
