@@ -66,7 +66,7 @@ const Sidebar = () => {
                         />
                     </Link>
                 }
-                <Link to={'/calendar'}>
+                <Link to={'/home/calendar'}>
                     <Option
                         Icon={FaCalendarAlt}
                         title="Calendar"
@@ -75,7 +75,7 @@ const Sidebar = () => {
                         open={open}
                     />
                 </Link>
-                <Link to={user.role==='Student'?'home/profile':'home/teacherProfile'}>
+                <Link to={user.role==='Student'?'/home/profile':'/home/teacherProfile'}>
                     <Option
                         Icon={CgProfile}
                         title="Profile"

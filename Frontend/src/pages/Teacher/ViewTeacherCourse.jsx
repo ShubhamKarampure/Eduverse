@@ -65,6 +65,7 @@ const ViewTeacherCourse = () => {
                 description={course.description}
                 branch={course.branch}
                 key={index}
+                courseId={course._id}
               />
             );
           })}

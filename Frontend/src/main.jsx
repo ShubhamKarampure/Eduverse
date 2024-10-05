@@ -20,7 +20,8 @@ import LandingPage from "./pages/landingPage.jsx";
 const router = createBrowserRouter([
   {
     path:"/",
-    element:<LandingPage/>
+    element:<LandingPage/>,
+    errorElement: <PageNotFound/>
   },
   {
     path: "/home",
@@ -69,10 +70,7 @@ const router = createBrowserRouter([
 
     ],
     errorElement: <PageNotFound />,
-  },{
-    path: '/calendar',
-    element: <Calendar/>
-  }
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(

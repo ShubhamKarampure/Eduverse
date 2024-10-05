@@ -60,7 +60,7 @@ const Card = ({
   studentId,
   students = [],
   courseId,
-  background
+  background=''
 }) => {
   const navigate = useNavigate();
   const toast = useToast();
