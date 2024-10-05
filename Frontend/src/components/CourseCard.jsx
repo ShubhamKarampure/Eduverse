@@ -1,16 +1,25 @@
 import { motion } from "framer-motion";
 
-const SquishyCard = ({ name, description, branch }) => {
+const SquishyCard = ({ name, description, branch, studentId, students = [] }) => {
     return (
-        <section className="bg-neutral-900 px-4 py-12">
+        <section className="px-4 py-12">
             <div className="mx-auto w-fit">
-                <Card name={name} branch={branch} description={description} />
+                <Card
+                    name={name}
+                    branch={branch}
+                    description={description}
+                    studentId={studentId}
+                    students={students}
+                />
             </div>
         </section>
     );
 };
 
-const Card = ({ name, description, branch }) => {
+const Card = ({ name, description, branch, studentId, students = [] }) => {
+    // Ensure students is defined and is an array
+    const isEnrolled = Array.isArray(students) && students.includes(studentId);
+
     return (
         <motion.div
             whileHover="hover"
@@ -44,13 +53,16 @@ const Card = ({ name, description, branch }) => {
                 >
                     {name}
                 </motion.span>
-                <p>
+                <p className="line-clamp-3 text-ellipsis overflow-hidden">
                     {description}
                 </p>
             </div>
+
+            {/* Button to either "Open course" or "Enroll now" */}
             <button className="absolute bottom-4 left-4 right-4 z-20 rounded border-2 border-white bg-white py-2 text-center font-mono font-black uppercase text-neutral-800 backdrop-blur transition-colors hover:bg-white/30 hover:text-white">
-                Open
+                {isEnrolled ? "Open course" : "Enroll now"}
             </button>
+
             <Background />
         </motion.div>
     );

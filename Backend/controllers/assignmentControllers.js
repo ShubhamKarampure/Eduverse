@@ -4,18 +4,18 @@ import { uploadOnCloud } from "../utils/cloudinary.js";
 import dotenv from 'dotenv'
 dotenv.config()
 
-export const createAssignmentController=async(req,res)=>{
+export const createAssignmentController = async (req, res) => {
     try {
-        const {deadline,course,description,criteria}=req.body
-        if(!deadline || !course || !description || !criteria)
+        const { deadline, course, description, criteria } = req.body
+        if (!deadline || !course || !description || !criteria)
             return res.status(401).json({
-                success:false,
-                message:"Enter all fields"
+                success: false,
+                message: "Enter all fields"
             })
-        const Assignment=await AssignmentModel.create(req.body)
+        const Assignment = await AssignmentModel.create(req.body)
         res.status(201).json({
-            success:true,
-            message:"Assignment created",
+            success: true,
+            message: "Assignment created",
             Assignment
         })
     } catch (error) {
@@ -27,13 +27,13 @@ export const createAssignmentController=async(req,res)=>{
     }
 }
 
-export const deleteAssignmentController=async(req,res)=>{
+export const deleteAssignmentController = async (req, res) => {
     try {
-        const assignment=req.params.id
-        const deletedAssignment=await AssignmentModel.findOneById(assignment)
+        const assignment = req.params.id
+        const deletedAssignment = await AssignmentModel.findOneById(assignment)
         res.status(200).json({
-            success:true,
-            message:"Assignment deleted",
+            success: true,
+            message: "Assignment deleted",
             deletedAssignment
         })
     } catch (error) {
@@ -45,17 +45,17 @@ export const deleteAssignmentController=async(req,res)=>{
     }
 }
 
-export const updateAssignmentController=async(req,res)=>{
+export const updateAssignmentController = async (req, res) => {
     try {
-        const assignment=req.params.id
-        const updatedAssignment=await AssignmentModel.findByIdAndUpdate(assignment,req.body,{new:true})
-        if(req.body.deadline){
-            let n=updatedAssignment.submissions.length
-            for(let i=0;i<n;i++) updatedAssignment.submissions[i].false=(submissionDate>deadline)
+        const assignment = req.params.id
+        const updatedAssignment = await AssignmentModel.findByIdAndUpdate(assignment, req.body, { new: true })
+        if (req.body.deadline) {
+            let n = updatedAssignment.submissions.length
+            for (let i = 0; i < n; i++) updatedAssignment.submissions[i].false = (submissionDate > deadline)
         }
         res.status(200).json({
-            success:true,
-            message:"Assignment updated",
+            success: true,
+            message: "Assignment updated",
             updatedAssignment
         })
     } catch (error) {
@@ -67,24 +67,24 @@ export const updateAssignmentController=async(req,res)=>{
     }
 }
 
-export const submitAssignment=async(req,res)=>{
+export const submitAssignment = async (req, res) => {
     try {
-        const studentId=req.params.id
-        const {submissionFile}=req.files
+        const studentId = req.params.id
+        const { submissionFile } = req.files
         console.log(submissionFile);
-        const {assignmentId} =req.body
-        if(submissionFile.mimetype!='application/pdf')
+        const { assignmentId } = req.body
+        if (submissionFile.mimetype != 'application/pdf')
             return res.status(401).json({
-                success:false,
-                message:"Use only pdf format"
+                success: false,
+                message: "Use only pdf format"
             })
-        const submission=await uploadOnCloud(submissionFile.tempFilePath)
-        const assignment=await AssignmentModel.findById(assignmentId)
-        assignment.submissions.push({student:studentId,submission,submissionDate:Date.now(),late:(Date.now()>assignment.deadline)})
+        const submission = await uploadOnCloud(submissionFile.tempFilePath)
+        const assignment = await AssignmentModel.findById(assignmentId)
+        assignment.submissions.push({ student: studentId, submission, submissionDate: Date.now(), late: (Date.now() > assignment.deadline) })
         assignment.save()
         res.status(201).json({
-            success:true,
-            message:"Assignment submitted",
+            success: true,
+            message: "Assignment submitted",
             assignment
         })
     } catch (error) {
@@ -96,14 +96,14 @@ export const submitAssignment=async(req,res)=>{
     }
 }
 
-export const getAssignmentsByCourseController=async(req,res)=>{
+export const getAssignmentsByCourseController = async (req, res) => {
     try {
-        const {course}=req.headers
-        console.log(course);        
-        const assignments=await AssignmentModel.findOne({course:course})
+        const { course } = req.headers
+        console.log(course);
+        const assignments = await AssignmentModel.findOne({ course: course })
         res.status(200).json({
-            success:true,
-            message:"Assignments fetched",
+            success: true,
+            message: "Assignments fetched",
             assignments
         })
     } catch (error) {
@@ -115,26 +115,26 @@ export const getAssignmentsByCourseController=async(req,res)=>{
     }
 }
 
-export const gradeAssignmentController=async(req,res)=>{
+export const gradeAssignmentController = async (req, res) => {
     try {
-        const {assignmentId}=req.params.id
-        const {studentId}=req.body
-        const assignment= await AssignmentModel.findById(assignmentId)
-        const criteria=assignment.criteria
-        const submission=assignment.submissions.find((submission)=>submission.student==studentId)
-        const url=submission.submission
-        const response=await axios.post(process.env.FLASK_URL,{url,criteria},{
-            headers:{
-                "content-type":"application/json",
+        const { assignmentId } = req.params.id
+        const { studentId } = req.body
+        const assignment = await AssignmentModel.findById(assignmentId)
+        const criteria = assignment.criteria
+        const submission = assignment.submissions.find((submission) => submission.student == studentId)
+        const url = submission.submission
+        const response = await axios.post(process.env.FLASK_URL, { url, criteria }, {
+            headers: {
+                "content-type": "application/json",
             },
-            credentials:true
+            credentials: true
         })
-        const evaluation=response.data
-        submission.grade=response.data.grade
+        const evaluation = response.data
+        submission.grade = response.data.grade
         assignment.save()
         res.status(200).json({
-            success:true,
-            message:"Assignment evaluated successfully",
+            success: true,
+            message: "Assignment evaluated successfully",
             evaluation,
             assignment
         })

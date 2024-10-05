@@ -6,11 +6,16 @@ import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { Outlet } from 'react-router-dom';
 
 const Home = () => {
-
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            navigate('/login');
+        }
+    }, []);
     return (
-        <div className='flex h-screen'>
+        <div className='flex h-screen bg-white'>
             {/* Sidebar */}
-            <div className='sticky top-0 h-screen shrink-0'>
+            <div className='sticky top-0 h-screen shrink-0 bg-transparent'>
                 <Example />
             </div>
 
