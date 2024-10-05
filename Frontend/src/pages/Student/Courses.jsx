@@ -73,7 +73,7 @@ const Courses = () => {
                 studentId={user._id}
                 students={course.students}
                 key={index}
-                courseId={course._id}
+                id={course._id}
                 Key={course.enrollmentKey}
                 background={imageUrl}
               />

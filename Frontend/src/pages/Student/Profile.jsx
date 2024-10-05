@@ -18,6 +18,7 @@ import {
     useColorModeValue
 } from '@chakra-ui/react'
 import { FaUser, FaBook, FaGraduationCap } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom';
 
 export default function ProfilePage() {
     // Mock user data
@@ -25,10 +26,12 @@ export default function ProfilePage() {
 
     // Mock courses data
     const courses = JSON.parse(localStorage.getItem('student-courses'))
-
+    const navigate = useNavigate();
     const bgColor = useColorModeValue('white', 'gray.800')
     const textColor = useColorModeValue('gray.600', 'gray.200')
-
+    const handleViewCourses = () => {
+        navigate('/home/mycourses')
+    }
     return (
         <Container maxW="container.xl" py={8}>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
@@ -60,7 +63,7 @@ export default function ProfilePage() {
                             </Box>
                         ))}
                     </VStack>
-                    <Button leftIcon={<FaGraduationCap />} colorScheme="blue" mt={4} width="full">
+                    <Button leftIcon={<FaGraduationCap />} colorScheme="blue" mt={4} width="full" onClick={handleViewCourses}>
                         View All Courses
                     </Button>
                 </Box>
