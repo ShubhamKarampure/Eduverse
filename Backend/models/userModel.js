@@ -33,7 +33,14 @@ const UserSchema=mongoose.Schema({
         type:[mongoose.Types.ObjectId],
         default:[]
     },
-    img:String,
+    image: {
+        url: {
+            type: String,
+        },
+        publicId: {
+            type: String,
+        }
+    },
     dob:{
         type:{
             day:Number,

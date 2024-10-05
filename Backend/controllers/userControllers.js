@@ -85,36 +85,58 @@ export const loginController = async (req, res) => {
 
 export const updateProfileController = async (req, res) => {
     try {
-        const id = req.params.id
-        const { name, email, username } = req.body
-        if (!name || !email || !username)
+        const id = req.params.id;
+        const { name, email, username } = req.body;
+
+        if (!name || !email || !username) {
             return res.status(401).json({
                 success: false,
                 message: "Please enter credentials"
-            })
-        let img = ""
+            });
+        }
+
+        let imageData = null;
+
         if (req.files) {
-            const { image } = req.files
+            const { image } = req.files;
             console.log(image);
-            const types = ['image/jpg', 'image/png', 'image/jpeg']
-            if (!types.includes(image.mimetype))
+
+            const types = ['image/jpg', 'image/png', 'image/jpeg'];
+            if (!types.includes(image.mimetype)) {
                 return res.status(401).json({
                     success: false,
                     message: "Use only png, jpg or jpeg files"
-                })
-            img = await uploadOnCloud(image.tempFilePath)
+                });
+            }
+
+            const img = await uploadOnCloud(image.tempFilePath);
+            imageData = {
+                url: img.url,
+                publicId: img.public_id,
+            };
         }
-        const updatedUser = await UserModel.findByIdAndUpdate(id, { name, email, username, img }, { new: true })
-        return res.status(201).json({
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            id,
+            {
+                name,
+                email,
+                username,
+                ...(imageData && { image: imageData }), 
+            },
+            { new: true }
+        );
+
+        return res.status(200).json({
             success: true,
             message: "User updated successfully",
             user: updatedUser
-        })
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
             success: false,
             message: "Internal server error"
-        })
+        });
     }
 }
