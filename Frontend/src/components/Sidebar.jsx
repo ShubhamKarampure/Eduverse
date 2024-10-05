@@ -72,16 +72,16 @@ const Sidebar = () => {
                         />
                     </Link>
                 }
-                <Link>
+                <Link to={'/calendar'}>
                     <Option
                         Icon={FaCalendarAlt}
-                        title="Calender"
+                        title="Calendar"
                         selected={selected}
                         setSelected={setSelected}
                         open={open}
                     />
                 </Link>
-                <Link to={'/profile'}>
+                <Link to={user.role==='Student'?'/profile':'/teacherProfile'}>
                     <Option
                         Icon={CgProfile}
                         title="Profile"
