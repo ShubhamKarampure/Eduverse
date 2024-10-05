@@ -4,6 +4,7 @@ import { uploadOnCloud } from "../utils/cloudinary.js";
 import { deleteFromCloud } from "../utils/cloudinary.js";
 import dotenv from 'dotenv'
 import axios from 'axios'
+import { request } from "express";
 dotenv.config()
 
 export const createAssignmentController = async (req, res) => {
@@ -168,9 +169,14 @@ export const getAssignmentsByCourseController = async (req, res) => {
 
 export const gradeAssignmentController = async (req, res) => {
     try {
-        const { studentId, assignmentId } = req.body
+        const studentId = req.headers.studentid;
+        console.log(studentId)
+        const assignmentId = req.headers.assignmentid;
+        console.log(assignmentId)
         const assignment = await AssignmentModel.findById(assignmentId)
+        console.log(assignment)
         const criteria = assignment.criteria
+        console.log(criteria)
         const submission = assignment.submissions.find((submission) => submission.student == studentId)
         const pdf_url = submission.submission
         console.log({ pdf_url, criteria });
