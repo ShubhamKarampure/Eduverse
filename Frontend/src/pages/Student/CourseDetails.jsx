@@ -15,32 +15,17 @@ import {
   Button,
   Input,
   useToast,
+  Flex,
 } from "@chakra-ui/react";
 import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { getAssignments, submitAssignment } from "../../APIRoutes/index.js";
-import { getAllCoursesByInstructor } from "../../APIRoutes/index.js";
-    Box,
-    Container,
-    Heading,
-    Text,
-    Image,
-    SimpleGrid,
-    Badge,
-    VStack,
-    HStack,
-    Card,
-    CardBody,
-    Icon,
-    Button,
-    Input,
-    Flex,
-} from '@chakra-ui/react';
-import { CheckCircleIcon, TimeIcon } from '@chakra-ui/icons';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { getAssignments, gradeAssignment, submitAssignment } from '../../APIRoutes/index.js';
+import {
+  getAssignments,
+  submitAssignment,
+  gradeAssignment,
+  getAllCoursesByInstructor,
+} from "../../APIRoutes/index.js";
 
 export default function CoursePage() {
   const { id } = useParams();
@@ -54,8 +39,11 @@ export default function CoursePage() {
   const selectedCourse = courses.find((course) => course._id === id);
   const [assignments, setAssignments] = useState([]);
   const [file, setFile] = useState(null);
-  const navigate = useNavigate();
+  const [grades, setGrades] = useState({});
+  const [hasSubmitted, setHasSubmitted] = useState({}); // Track submissions
   const [isButtonDisabled, setButtonDisabled] = useState(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
@@ -74,52 +62,17 @@ export default function CoursePage() {
     };
     fetchAssignments();
   }, [id]);
-    const { id } = useParams();
-    const courses = JSON.parse(localStorage.getItem('student-courses'));
-    const selectedCourse = courses.find(course => course._id === id);
-    const user = JSON.parse(localStorage.getItem('user'));
-    const [assignments, setAssignments] = useState([]);
-    const [file, setFile] = useState(null);
-    const [grades, setGrades] = useState({});
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchAssignments = async () => {
-            try {
-                const response = await axios.get(`${getAssignments}`, {
-                    headers: {
-                        "course": `${id}`
-                    },
-                    withCredentials: true
-                });
-                if (response.data.success) {
-                    setAssignments(response.data.assignments);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchAssignments();
-    }, [id]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]); // Save selected file
   };
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-    };
 
   const handleFileUpload = async (assignmentId) => {
     if (!file) return; // Prevent upload if no file is selected
-    const handleFileUpload = async (assignmentId) => {
-        if (!file) return;
 
     const formData = new FormData();
     formData.append("submissionFile", file); // Append the file
-    formData.append("assignmentId", assignmentId); // Append the file
-        const formData = new FormData();
-        formData.append('submissionFile', file);
-        formData.append('assignmentId', assignmentId);
+    formData.append("assignmentId", assignmentId); // Append the assignment ID
 
     try {
       const response = await axios.post(
@@ -132,11 +85,83 @@ export default function CoursePage() {
         }
       );
       if (response.data.success) {
-        alert("File uploaded successfully");
+        toast({
+          title: "File uploaded",
+          description: "Your assignment was uploaded successfully.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+        setFile(null); // Clear file input
+        setHasSubmitted((prev) => ({ ...prev, [assignmentId]: true })); // Mark assignment as submitted
       }
     } catch (error) {
       console.log("Error uploading file:", error);
     }
+  };
+
+  const handleGrade = async (assignmentId) => {
+    if (!hasSubmitted[assignmentId]) {
+      toast({
+        title: "No Submission",
+        description: "Please upload the assignment before checking the grade.",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+      return; // Prevent grading if no submission
+    }
+    try {
+      const response = await axios.get(`${gradeAssignment}`, {
+        headers: {
+          studentid: `${user._id}`,
+          assignmentid: `${assignmentId}`,
+        },
+      });
+      if (response.data.success) {
+        setGrades((prev) => ({
+          ...prev,
+          [assignmentId]: response.data.evaluation,
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleButton = (e, id) => {
+    e.preventDefault();
+    setButtonDisabled(true);
+    if (user.role === "Student") {
+      navigate(`/home/quiz/${id}`);
+    } else {
+      handleGenerateQuiz(id);
+    }
+    setButtonDisabled(false);
+  };
+
+  const handleGenerateQuiz = (id) => {
+    axios
+      .get(`${getAllCoursesByInstructor}/${id}`)
+      .then(() => {
+        toast({
+          title: "Quiz Generated",
+          description: "You have successfully generated a quiz.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description: "An error occurred while generating quiz.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      });
   };
 
   if (!selectedCourse) {
@@ -146,62 +171,15 @@ export default function CoursePage() {
       </Container>
     );
   }
-  const handleViewQuiz=()=>{
-    if(user.role==='Teacher'){
-        navigate(`/home/quiz/${id}`)
-    }
-  }
-  const handleTakeQuiz = (id_) => {
-    navigate(`/home/quiz/${id_}`);
-  };
-  const handleButton = (e, id) => {
-    e.preventDefault();
-    setButtonDisabled(true);
-    if (user.role === "Student") {
-      handleTakeQuiz(id);
-    } else {
-      handleGenerateQuiz(id);
-    }
-    setButtonDisabled(false);
-  };
-  const handleGenerateQuiz = (id) => {
-    // console.log(id);
 
-    axios
-      .get(`${getAllCoursesByInstructor}/${id}`)
-      .then((response) => {
-        // console.log(response.data);
-        toast({
-          title: "Generation Success",
-          description: "You have successfully generated a quiz.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-        toast({
-          title: "Generation Failed",
-          description: "An error occured." + { e },
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      });
-  };
   return (
     <Container maxW="container.xl" py={8}>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
-        <VStack align="start" justify="center" spacing={4}>
+        <VStack align="start" spacing={4}>
           <Heading as="h1" size="2xl">
             {selectedCourse.name}
           </Heading>
-          <Text
-            fontSize="xl"
-            color="gray.600"
-            className="line-clamp-3 text-ellipsis overflow-hidden"
-          >
+          <Text fontSize="xl" color="gray.600">
             {selectedCourse.description}
           </Text>
           <HStack>
@@ -212,144 +190,86 @@ export default function CoursePage() {
         <Box position="relative" height={{ base: "200px", md: "300px" }}>
           <Image
             src={selectedCourse?.image?.url || "/placeholder.svg"}
-            alt={`${selectedCourse.name} Course Cover`}
+            alt={`${selectedCourse.name} Cover`}
             objectFit="cover"
-            layout="fill"
           />
         </Box>
       </SimpleGrid>
+
       <Button
         my={6}
-        color={"teal"}
+        colorScheme="teal"
         onClick={(e) => handleButton(e, id)}
         disabled={isButtonDisabled}
       >
         {user.role === "Student" ? "Take Quiz" : "Generate Quiz"}
       </Button>
-      <Button
-        mx={6}
-        color={"teal"}
-        className={user.role === "Student" ? "hidden" : ""}
-        onClick={handleViewQuiz}
-      >
-        View Quiz
-      </Button>
+      {user.role === "Teacher" && (
+        <Button mx={6} colorScheme="teal" onClick={() => navigate(`/home/quiz/${id}`)}>
+          View Quiz
+        </Button>
+      )}
+
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-        {assignments.map((item, index) => (
-          <Card key={index} display="flex" flexDirection="column" height="100%">
+        {assignments.map((assignment, index) => (
+          <Card key={index} display="flex" flexDirection="column">
             <CardBody display="flex" flexDirection="column" flexGrow={1}>
               <HStack mb={2}>
                 <Icon as={TimeIcon} color="red.500" />
-                <Heading size="md">{item.description}</Heading>
+                <Heading size="md">{assignment.description}</Heading>
               </HStack>
-              <HStack className="flex flex-wrap">
-                {item.criteria.map((c, index) => (
-                  <Badge colorScheme="gray" key={index}>
-                    {c}
+              <HStack>
+                {assignment.criteria.map((criterion, i) => (
+                  <Badge key={i} colorScheme="gray">
+                    {criterion}
                   </Badge>
                 ))}
               </HStack>
-              <Text className="font-semibold text-sm">
-                Deadline: {item.deadline.toString().slice(0, 10)}
-              </Text>
-              {/* Spacer to push the input to the bottom */}
+              <Text>Deadline: {assignment.deadline.slice(0, 10)}</Text>
               <Box flexGrow={1}></Box>
-    if (!selectedCourse) {
-        return (
-            <Container maxW="container.xl" py={8}>
-                <Heading>Course not found</Heading>
-            </Container>
-        );
-    }
-
-    const handleTakeQuiz = (id_) => {
-        navigate(`/home/quiz/${id_}`);
-    }
-
-    const handleGrade = async (aid) => {
-        try {
-            const response = await axios.get(`${gradeAssignment}`, {
-                headers: {
-                    "studentId": `${user._id}`,
-                    "assignmentId": `${aid}`
-                }
-            });
-            if (response.data.success) {
-                setGrades(prev => ({
-                    ...prev,
-                    [aid]: response.data.evaluation
-                }));
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    return (
-        <Container maxW="container.xl" py={8}>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
-                <VStack align="start" justify="center" spacing={4}>
-                    <Heading as="h1" size="2xl">
-                        {selectedCourse.name}
-                    </Heading>
-                    <Text fontSize="xl" color="gray.600" className="line-clamp-3 text-ellipsis overflow-hidden">
-                        {selectedCourse.description}
-                    </Text>
-                    <HStack>
-                        <Badge colorScheme="gray">12 weeks</Badge>
-                        <Badge colorScheme="gray">Online</Badge>
-                    </HStack>
-                </VStack>
-                <Box position="relative" height={{ base: '200px', md: '300px' }}>
-                    <Image
-                        src={selectedCourse?.image?.url || '/placeholder.svg'}
-                        alt={`${selectedCourse.name} Course Cover`}
-                        objectFit="cover"
-                        layout="fill"
-                    />
-                </Box>
-            </SimpleGrid>
-            <Button color={'teal'} onClick={() => handleTakeQuiz(id)}>Take Quiz</Button>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-                {assignments.map((item, index) => (
-                    <Card key={index} display="flex" flexDirection="column" height="100%">
-                        <CardBody display="flex" flexDirection="column" flexGrow={1}>
-                            <HStack mb={2}>
-                                <Icon as={TimeIcon} color="red.500" />
-                                <Heading size="md">{item.description}</Heading>
-                            </HStack>
-                            <HStack className="flex flex-wrap">
-                                {item.criteria.map((c, index) => (
-                                    <Badge colorScheme="gray" key={index}>{c}</Badge>
-                                ))}
-                            </HStack>
-                            <Text className='font-semibold'>Deadline: {item.deadline.toString().slice(0, 10)}</Text>
-                            <Box flexGrow={1}></Box>
-
-              {/* Styled Input */}
               <Button
                 as="label"
                 htmlFor={`file-input-${index}`}
                 colorScheme="teal"
                 width="100%"
-                mt="auto"
                 size="lg"
-                onClick={() => handleFileUpload(item._id)}
-                cursor="pointer"
+                onClick={() => handleFileUpload(assignment._id)}
               >
                 Upload Assignment
                 <Input
                   id={`file-input-${index}`}
                   type="file"
                   display="none"
-                  accept=".pdf" // Only accept PDF files
-                  onChange={handleFileChange} //
+                  accept=".pdf"
+                  onChange={handleFileChange}
                 />
               </Button>
+              <Button
+                colorScheme="teal"
+                my={4}
+                onClick={() => handleGrade(assignment._id)}
+              >
+                See Grade
+              </Button>
+              {hasSubmitted[assignment._id] && grades[assignment._id] ? (
+                <Flex direction="column">
+                  <Text fontWeight="bold">Grade: {grades[assignment._id].grade}</Text>
+                  {Object.entries(grades[assignment._id])
+                    .filter(([key]) => key !== "grade")
+                    .map(([key, value]) => (
+                      <Text key={key}>
+                        <strong>{key}:</strong> {value}
+                      </Text>
+                    ))}
+                </Flex>
+              ) : (
+                <Text color="gray.500">Assignment not submitted yet.</Text>
+              )}
             </CardBody>
           </Card>
         ))}
       </SimpleGrid>
+
       <Heading as="h2" size="xl" mt={12} mb={6}>
         Course Roadmap
       </Heading>
@@ -368,94 +288,19 @@ export default function CoursePage() {
       </SimpleGrid>
     </Container>
   );
-                            <Button
-                                as="label"
-                                htmlFor={`file-input-${index}`}
-                                colorScheme="teal"
-                                width="100%"
-                                mt="auto"
-                                size="lg"
-                                onClick={() => handleFileUpload(item._id)}
-                                cursor="pointer"
-                            >
-                                Upload Assignment
-                                <Input
-                                    id={`file-input-${index}`}
-                                    type="file"
-                                    display="none"
-                                    accept=".pdf"
-                                    onChange={handleFileChange}
-                                />
-                            </Button>
-                            <Button colorScheme='teal' className='my-4' onClick={() => handleGrade(item._id)}>See Grade</Button>
-
-                            {grades[item._id] && (
-                                <Flex className='flex-col'>
-                                    <Text fontWeight="bold" fontSize="lg">
-                                        Grade: {grades[item._id].grade}
-                                    </Text>
-                                    {Object.entries(grades[item._id])
-                                        .filter(([key]) => key !== 'grade')
-                                        .map(([key, value]) => (
-                                            <Text key={key}>
-                                                <span style={{ fontWeight: 'bold' }}>{key}:</span> {value}
-                                            </Text>
-                                        ))}
-                                </Flex>
-                            )}
-                        </CardBody>
-                    </Card>
-                ))}
-
-            </SimpleGrid>
-            <Heading as="h2" size="xl" mt={12} mb={6}>
-                Course Roadmap
-            </Heading>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-                {roadmapItems.map((item, index) => (
-                    <Card key={index}>
-                        <CardBody>
-                            <HStack mb={2}>
-                                <Icon as={CheckCircleIcon} color="green.500" />
-                                <Heading size="md">{item.title}</Heading>
-                            </HStack>
-                            <Text color="gray.600">{item.description}</Text>
-                        </CardBody>
-                    </Card>
-                ))}
-            </SimpleGrid>
-        </Container>
-    );
 }
 
-// Dummy roadmap items
 const roadmapItems = [
   {
     title: "Introduction to ML Concepts",
-    description:
-      "Learn the fundamental concepts and terminology of Machine Learning.",
+    description: "Learn the fundamental concepts and terminology of Machine Learning.",
   },
   {
     title: "Data Preprocessing",
-    description:
-      "Understand how to clean, transform, and prepare data for ML models.",
+    description: "Understand how to prepare and clean data for model training.",
   },
   {
-    title: "Supervised Learning",
-    description: "Explore algorithms for classification and regression tasks.",
-  },
-  {
-    title: "Unsupervised Learning",
-    description: "Discover clustering and dimensionality reduction techniques.",
-  },
-  {
-    title: "Model Evaluation",
-    description:
-      "Learn how to assess and improve the performance of ML models.",
-  },
-  {
-    title: "Deep Learning Basics",
-    description:
-      "Introduction to neural networks and deep learning frameworks.",
+    title: "Model Selection",
+    description: "Learn about different types of ML models and when to use them.",
   },
 ];
