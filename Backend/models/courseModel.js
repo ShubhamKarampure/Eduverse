@@ -30,6 +30,21 @@ const CourseSchema=new mongoose.Schema({
         type:[mongoose.Types.ObjectId],
         default:[]
     },
+    quiz: {
+        type: [
+            {
+                question: { type: String, required: true },
+                options: {
+                    a: { type: String, required: true },
+                    b: { type: String, required: true },
+                    c: { type: String, required: true },
+                    d: { type: String, required: true }
+                },
+                answer: { type: String, required: true }
+            }
+        ],
+        default: []
+    }
 })
 
 export const CourseModel = mongoose.model('courses',CourseSchema)

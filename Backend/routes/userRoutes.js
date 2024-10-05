@@ -12,5 +12,4 @@ router.route('/:id').patch(fileUpload({
     tempFileDir: 'C:/Windows/Temp'
 }),updateProfileController)
 router.route('/assignments').get(getAssignmentsByCourseController)
-router.route('/courses').get(getAllCoursesByBranchController)
 export const userRouter=router

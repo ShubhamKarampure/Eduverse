@@ -14,6 +14,9 @@ export const createAssignmentController=async(req,res)=>{
                 message:"Enter all fields"
             })
         const Assignment=await AssignmentModel.create(req.body)
+        const courseObject=await CourseModel.findById(course)
+        courseObject.assignments.push(Assignment._id)
+        courseObject.save()
         res.status(201).json({
             success:true,
             message:"Assignment created",

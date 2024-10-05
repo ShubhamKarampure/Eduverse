@@ -1,6 +1,7 @@
 import { CourseModel } from "../models/courseModel.js";
 import { AssignmentModel } from "../models/assignmentModel.js";
 import bcrypt from 'bcrypt'
+import axios from 'axios'
 
 export const createCourseController=async (req,res)=>{
     try {
@@ -73,8 +74,27 @@ export const deleteCourseController=async(req,res)=>{
 
 export const getAllCoursesByBranchController=async(req,res)=>{
     try {
-        const branch=req.headers.branch
+        const branch=req.params.id
         const courses=await CourseModel.find({branch:branch})
+        res.status(200).json({
+            success:true,
+            message:"Found all courses",
+            courses
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success:false,
+            message:"Internal server error"
+        })
+    } 
+}
+
+export const getAllCoursesByInstructor=async(req,res)=>{
+    try {
+        console.log(req.headers);        
+        const {instructorid}=req.headers       
+        const courses=await CourseModel.find({instructor:instructorid})
         res.status(200).json({
             success:true,
             message:"Found all courses",
@@ -124,5 +144,33 @@ export const enrollStudentController=async(req,res)=>{
     }
 }
 
+export const generateQuizController=async(req,res)=>{
+    try {
+        const courseId=req.params.id
+        const course=await CourseModel.findById(courseId)
+        const description=course.description
+        const response=await axios.post(`${process.env.FLASK_URL}/quiz`,{description},{
+            headers:{
+                "Content-type":"application/json",
+            },
+            withCredentials:true
+        })
+        console.log("response:",response.data);
+        course.quiz=response.data.quiz
+        console.log("course quiz:",course.quiz)
+        course.save()
+        res.status(200).json({
+            success:true,
+            message:"Generated quiz",
+            course
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success:false,
+            message:"Internal server error"
+        })
+    }
+}
 
 
