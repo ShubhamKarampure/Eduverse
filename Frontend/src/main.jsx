@@ -1,6 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.jsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ViewTeacherCourse } from "./pages/index.js";
@@ -11,6 +10,7 @@ import Courses from "./pages/Student/Courses.jsx";
 import Register from "./pages/Auth/Register.jsx";
 import Login from "./pages/Auth/Login.jsx";
 import MyCourses from "./pages/Student/MyCourses.jsx";
+import Calendar from "./pages/Student/Calendar.jsx";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +26,9 @@ const router = createBrowserRouter([
       },{
         path:'/mycourses',
         element: <MyCourses />,
+      },{
+        path: '/calendar',
+        element: <Calendar/>
       }
     ],
     errorElement: <PageNotFound />
@@ -45,7 +48,7 @@ const router = createBrowserRouter([
 
     ],
     errorElement: <PageNotFound />,
-  }
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(

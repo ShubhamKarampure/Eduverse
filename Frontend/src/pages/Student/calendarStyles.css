@@ -1,0 +1,63 @@
+.deadline-calendar {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .deadline-calendar .calendar {
+    width: 100%;
+  }
+  
+  .deadline-calendar .react-calendar {
+    border: none;
+  }
+  
+  .deadline-calendar .react-calendar__tile {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .deadline-calendar .today {
+    background-color: #f0f0f0;
+  }
+  
+  .deadline-calendar .assignment-date {
+    background-color: #ffe0e0;
+    color: #ff5050;
+  }
+  
+  .deadline-calendar .react-calendar__tile--active {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .deadline-calendar .react-calendar__tile--hasDate {
+    cursor: pointer;
+  }
+  
+  .deadline-calendar ul {
+    list-style: disc inside;
+    padding: 0 20px;
+  }
+  
+  .deadline-calendar li {
+    margin-bottom: 10px;
+  }
+  
+  .deadline-calendar li:last-child {
+    margin-bottom: 0;
+  }
+  
+  .deadline-calendar .text-gray-700 {
+    color: #6b7280;
+  }
+  
+  .deadline-calendar .text-red-500 {
+    color: #ff5050;
+  }
+  
+  .deadline-calendar .text-gray-500 {
+    color: #9ca3af;
+  }

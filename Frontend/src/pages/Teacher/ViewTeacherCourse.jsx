@@ -3,59 +3,41 @@ import { Navbar } from "../../components/index.js";
 import { Example } from "../../components/Sidebar.jsx";
 import { SquishyCard } from "../../components/index.js";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
 
 const ViewTeacherCourse = () => {
   const [courses, setCourses] = useState([]);
+  const navigate=useNavigate()
   useEffect(() => {
     const storedCourses = localStorage.getItem("teacherCourses");
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      if (user.role.toLowerCase() === "Student") {
-        Navigate("/");
+      if (user.role.toLowerCase() === "student") {
+        navigate("/");
       }
-      // if (storedCourses) {
-      //   setCourses(storedCourses);
-      // } else {
-      //   axios
-      //     .get(
-      //       String(import.meta.env.VITE_BACKEND_URL) +
-      //         "/api/v1/user/teacher/course",
-      //       {
-      //         headers: {
-      //           instructorid: "66feea7bde656c626f7b53c8",
-      //         },
-      //       }
-      //     )
-      //     .then((res) => {
-      //       console.log(res);
-      //       setCourses(res.data.courses);
-      //     })
-      //     .catch((e) => console.log(e));
-      // }
+      if (storedCourses) {
+        setCourses(storedCourses);
+      } else {
+        axios
+          .get(
+            String(import.meta.env.VITE_BACKEND_URL) +
+              "/api/v1/user/teacher/course",
+            {
+              headers: {
+                instructorid: user._id,
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res);
+            setCourses(res.data.courses);
+            
+          })
+          .catch((e) => console.log(e));
+      }
     } else {
-      // Navigate('login')
-    }
-    if (storedCourses) {
-      setCourses(storedCourses);
-    } else {
-      axios
-        .get(
-          String(import.meta.env.VITE_BACKEND_URL) +
-          "/api/v1/user/teacher/course",
-          {
-            headers: {
-              instructorid: "66feea7bde656c626f7b53c8",
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-          setCourses(res.data.courses);
-        })
-        .catch((e) => console.log(e));
+      navigate('login')
     }
   }, []);
   const carouselRef = useRef(null);
