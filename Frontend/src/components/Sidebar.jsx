@@ -89,9 +89,9 @@ const Option = ({ Icon, title, selected, setSelected, open, notifs }) => {
         <motion.button
             layout
             onClick={() => setSelected(title)}
-            className={`relative flex h-10 w-full items-center rounded-md transition-colors 
-                ${selected === title ? "bg-indigo-100 text-indigo-800" : "text-black"}
-                ${!selected && "hover:bg-slate-100 hover:text-white"}`} // Added hover effect
+            className={`relative flex h-12 w-full items-center rounded-md transition-colors 
+                ${selected === title ? "bg-indigo-100 text-indigo-800" : "text-slate-500"}
+                ${!selected && "hover:bg-slate-100 hover:text-slate-700"}`} // Added hover effect
         >
             <motion.div
                 layout
@@ -163,7 +163,7 @@ const Logo = () => {
         >
             <svg
                 width="24"
-                height="auto"
+                height="24"
                 viewBox="0 0 50 39"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"

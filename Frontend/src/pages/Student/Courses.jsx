@@ -15,10 +15,7 @@ const Courses = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await axios.get(getAllCoursesByBranchRoute, {
-                    headers: {
-                        "branch": `${branch}`
-                    },
+                const response = await axios.get(`${getAllCoursesByBranchRoute}/${branch}`, {
                     withCredentials: true
                 });
                 if (response.data.success) {
@@ -57,7 +54,7 @@ const Courses = () => {
                 {/* Carousel container */}
                 <div
                     ref={carouselRef}
-                    className='flex overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar space-x-4 p-4 custom-scrollbar'
+                    className='flex overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar space-x-4 p-4'
                 >
                     {
                         courses.map((course, index) => {

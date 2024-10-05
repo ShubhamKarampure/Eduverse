@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ViewTeacherCourse } from "./pages/index.js";
 import { PageNotFound } from "./components/index.js";
 import { ChakraProvider } from '@chakra-ui/react';
 import Home from "./pages/Student/Home.jsx";
@@ -14,11 +15,16 @@ import MyCourses from "./pages/Student/MyCourses.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <Home />,
     children: [
-
-    ],
-    errorElement: <PageNotFound />,
+      {
+        path: "/teacher/",
+        element: <ViewTeacherCourse />
+      }, {
+        path: "/",
+        element: <Courses />,
+      }],
+    errorElement: <PageNotFound />
   },
   {
     path: "/register",

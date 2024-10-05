@@ -3,15 +3,17 @@ import { motion } from "framer-motion";
 const SquishyCard = ({ name, description, branch, studentId, students = [] }) => {
     return (
         <section className="px-4 py-12">
-            <div className="mx-auto w-fit">
-                <Card
-                    name={name}
-                    branch={branch}
-                    description={description}
-                    studentId={studentId}
-                    students={students}
-                />
-            </div>
+            <section className="px-4 py-12">
+                <div className="mx-auto w-fit">
+                    <Card
+                        name={name}
+                        branch={branch}
+                        description={description}
+                        studentId={studentId}
+                        students={students}
+                    />
+                </div>
+            </section>
         </section>
     );
 };
@@ -127,3 +129,4 @@ const Background = () => {
 };
 
 export default SquishyCard;
+

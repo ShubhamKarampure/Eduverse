@@ -17,12 +17,34 @@ export const uploadOnCloud=async(localFilePath)=>{
         const response=await cloudinary.uploader.upload(localFilePath,{
             resource_type:"auto"
         })//uploads file to cloud
-        return response.url//returns url to controller
+        console.log(response);
+        const {url,public_id}=response
+        return {url,public_id}//returns url to controller
     } catch (error) {
         console.log(error);
         fs.unlinkSync(localFilePath)//Removes locally saved temp file
+        deleteFromCloud(public_id)
     }
 }
+
+export const deleteFromCloud = async (publicId) => {
+    try {
+        if (!publicId) return null;
+        
+        const response = await cloudinary.uploader.destroy(publicId, {
+            resource_type: "image" // This ensures it deletes all types (image, video, etc.)
+        });
+
+        if (response.result === "ok") {
+            return { success: true, message: "File deleted successfully" };
+        } else {
+            return { success: false, message: `Failed to delete file: ${response.result}` };
+        }
+    } catch (error) {
+        console.log(error);
+        return { success: false, message: "Internal server error" };
+    }
+};
 
 
 

@@ -12,9 +12,8 @@ app = Flask(__name__)
 client = Groq()
 
 # GRADE API 
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
+@app.route('/grade', methods=['POST'])
+def grade():
     data = request.get_json()
 
     # Check if required fields are present
@@ -52,7 +51,6 @@ def upload_file():
     Provide a grade between 1 and 10 for the overall quality of the PDF content, followed by one line descriptions for each criterion.
 
     Output the result in the following JSON format
-
     {{
         "grade": (1-10),
         "{criteria[0]}": "Description for criterion {criteria[0]}",
@@ -66,7 +64,7 @@ def upload_file():
 
     # Create a completion request to grade the assignment
     completion = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[
             {
                 "role": "user",
@@ -76,23 +74,17 @@ def upload_file():
         temperature=1,
         max_tokens=1024,
         top_p=1,
-        stream=True,
+        stream=False,
+        response_format={"type": "json_object"},
         stop=None,
     )
-
-    # Collect and process the response
-    graded_response = ""
-    for chunk in completion:
-        graded_response += chunk.choices[0].delta.content or ""
-
-    # Extract only the content between curly braces using a regular expression
-    print(graded_response)
-    graded_response = extract_json_from_response(graded_response)
-    # Assuming the model returns JSON directly, you can return the response
+    message_content = completion.choices[0].message.content    
+    # If the content is in JSON format, parse it
     try:
-        return jsonify(graded_response)
-    except Exception as e:
-        return jsonify({"error": f"Failed to parse model response: {str(e)}"}), 500
+        json_response = json.loads(message_content)  # Parse the string into a JSON object
+        return jsonify(json_response)  # Return the JSON response
+    except json.JSONDecodeError:
+        return jsonify({"error": "Response is not valid JSON."}), 500
 
 def extract_text_from_pdf(file):
     reader = PyPDF2.PdfReader(file)
@@ -101,20 +93,132 @@ def extract_text_from_pdf(file):
         text += page.extract_text() or ""  # Handle potential None values
     return text
 
-def extract_json_from_response(response_text):
+@app.route('/quiz', methods=['POST'])
+def quiz():
+    data = request.get_json()
+
+    # Check if required fields are present
+    if not data or 'description' not in data:
+        return jsonify({"error": "Missing 'description' in the request."}), 400
+
+    text = data['description']
+    # Create a prompt with the criteria
+    prompt = f"""
+    Generate five multiple-choice questions based on the provided topics mentioned in following desciption {text}. For each question, provide exactly four options labeled "a", "b", "c", and "d". The answer should be one of the four options: "a", "b", "c", or "d". 
+
+    Output the result in valid JSON format with double quotes around all keys and values. The JSON format should be an array of question objects, as follows:
+
+    [
+    {{
+        "question": "Question text",
+        "options": {{
+            "a": "Option A text", 
+            "b": "Option B text", 
+            "c": "Option C text", 
+            "d": "Option D text"
+        }},
+        "answer": "Correct answer (a, b, c, or d)"
+    }},
+    {{
+        "question": "Question text 2",
+        "options": {{
+            "a": "Option A text 2", 
+            "b": "Option B text 2", 
+            "c": "Option C text 2", 
+            "d": "Option D text 2"
+        }},
+        "answer": "Correct answer 2 (a, b, c, or d)"
+    }},
+    ...
+    ]
+    """
+
+    # Create a completion request to grade the assignment
+    completion = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=1,
+        max_tokens=1024,
+        top_p=1,
+        stream=False,
+        response_format={"type": "json_object"},
+        stop=None,
+    )
+    message_content = completion.choices[0].message.content
+        
+        # If the content is in JSON format, parse it
     try:
-        # Simplified regex to find the first block of content between curly braces
-        json_match = re.search(r'\{.*?\}', response_text, re.DOTALL)
-        if json_match:
-            json_str = json_match.group(0)
-            json_str = json_str.replace("'", "\"")
-            # Load the extracted string into a Python dictionary
-            json_data = json.loads(json_str)
-            return json_data
-        else:
-            return {"error": "No valid JSON found in the response."}
-    except json.JSONDecodeError as e:
-        return {"error": f"Failed to parse JSON: {str(e)}"}
+        json_response = json.loads(message_content)  # Parse the string into a JSON object
+        return jsonify(json_response)  # Return the JSON response
+    except json.JSONDecodeError:
+        return jsonify({"error": "Response is not valid JSON."}), 500
+
+@app.route('/quiz/feedback', methods=['POST'])
+def quiz_feedback():
+    data = request.get_json()
+
+    # Check if required fields are present
+    if not data or 'questions' not in data:
+        return jsonify({"error": "Missing required fields in the request."}), 400
+
+    questions = data['questions']  # Expecting a list of question objects
+    feedback_list = []  # To store feedback for each question
+
+    for item in questions:
+        question = item.get('question')
+        options = item.get('options')
+        correct_answer = item.get('answer')
+        user_answer = item.get('user_answer')
+
+        # Validate each question item
+        if not question or not options or correct_answer is None or user_answer is None:
+            return jsonify({"error": "Missing fields in one or more question items."}), 400
+
+        # Create a prompt for generating AI feedback with JSON template
+        prompt = f"""
+        You are an AI grading assistant. Provide feedback based on the following question, options, correct answer, and user's answer.
+
+        Question: {question}
+        Options: {options}
+        Correct Answer: {correct_answer}
+        User's Answer: {user_answer}
+
+        Generate the feedback in valid JSON format, structured as follows:
+
+        {{
+            "feedback": "Your feedback message here."
+        }}
+
+        only give feedback no need and make it polite.
+        Provide constructive feedback on the user's answer, indicating whether it was correct or not and offering tips for improvement.
+        """
+
+        # Create a completion request to generate feedback
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=1,
+            max_tokens=150,
+            top_p=1,
+            stream=False,
+            response_format={"type": "json_object"},
+            stop=None
+        )
+        message_content = completion.choices[0].message.content
+
+        # If the content is in JSON format, parse it
+        try:
+            feedback_response = json.loads(message_content.strip())  # Parse the string into a JSON object
+            feedback_list.append(feedback_response)  # Add feedback to the list
+        except json.JSONDecodeError:
+            return jsonify({"error": "Response is not valid JSON."}), 500
+
+    return jsonify({"feedback": feedback_list})  # Return the list of feedback responses
 
 if __name__ == '__main__':
     app.run(debug=True)

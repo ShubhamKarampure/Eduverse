@@ -10,7 +10,7 @@ const Navbar = () => {
         navigate('/login');
     }
     return (
-        <nav className='flex justify-between items-center px-2 py-2 gap-5 bg-blue-300'>
+        <nav className='flex justify-between items-center px-2 py-2 gap-5 '>
             <div className='flex'>
                 <h1 className='text-3xl font-bold text-blue-600'>EduVerse</h1>
             </div>

@@ -23,6 +23,9 @@ coverage/
 # dotenv environment variables file
 .env
 
+#tempfiles folder
+.tempfiles
+
 # Next.js build output
 .next/
 

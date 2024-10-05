@@ -1,5 +1,5 @@
-const host = "http://localhost:4000"
+const host = "http://localhost:4000/api/v1/user"
 
-export const signupRoute = `${host}/api/v1/user/signup`
-export const loginRoute = `${host}/api/v1/user/login`
-export const getAllCoursesByBranchRoute = `${host}/api/v1/user/student/course/`
+export const signupRoute = `${host}/signup`
+export const loginRoute = `${host}/login`
+export const getAllCoursesByBranchRoute = `${host}/student/course/`
