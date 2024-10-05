@@ -35,6 +35,7 @@ export default function CoursePage() {
   const [assignments, setAssignments] = useState([]);
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
+  const [isButtonDisabled, setButtonDisabled] = useState(false);
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
@@ -90,24 +91,31 @@ export default function CoursePage() {
       </Container>
     );
   }
-
+  const handleViewQuiz=()=>{
+    if(user.role==='Teacher'){
+        navigate(`/home/quiz/${id}`)
+    }
+  }
   const handleTakeQuiz = (id_) => {
     navigate(`/home/quiz/${id_}`);
   };
-  const handleButton = (id) => {
+  const handleButton = (e, id) => {
+    e.preventDefault();
+    setButtonDisabled(true);
     if (user.role === "Student") {
       handleTakeQuiz(id);
     } else {
       handleGenerateQuiz(id);
     }
+    setButtonDisabled(false);
   };
   const handleGenerateQuiz = (id) => {
-    console.log(id);
+    // console.log(id);
 
     axios
       .get(`${getAllCoursesByInstructor}/${id}`)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         toast({
           title: "Generation Success",
           description: "You have successfully generated a quiz.",
@@ -120,8 +128,8 @@ export default function CoursePage() {
         console.log(e);
         toast({
           title: "Generation Failed",
-          description: "An error occured."+{e},
-          status: "success",
+          description: "An error occured." + { e },
+          status: "error",
           duration: 5000,
           isClosable: true,
         });
@@ -155,8 +163,21 @@ export default function CoursePage() {
           />
         </Box>
       </SimpleGrid>
-      <Button my={6} color={"teal"} onClick={() => handleButton(id)}>
+      <Button
+        my={6}
+        color={"teal"}
+        onClick={(e) => handleButton(e, id)}
+        disabled={isButtonDisabled}
+      >
         {user.role === "Student" ? "Take Quiz" : "Generate Quiz"}
+      </Button>
+      <Button
+        mx={6}
+        color={"teal"}
+        className={user.role === "Student" ? "hidden" : ""}
+        onClick={handleViewQuiz}
+      >
+        View Quiz
       </Button>
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
         {assignments.map((item, index) => (
