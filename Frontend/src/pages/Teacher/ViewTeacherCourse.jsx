@@ -10,8 +10,8 @@ import { Navigate } from "react-router-dom";
 const ViewTeacherCourse = () => {
   const [courses, setCourses] = useState([]);
   useEffect(() => {
-    const storedCourses =JSON.parse(localStorage.getItem("teacherCourses"));
-    const user =JSON.parse(localStorage.getItem("user"));
+    const storedCourses = localStorage.getItem("teacherCourses");
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       if (user.role.toLowerCase() === "Student") {
         Navigate("/");
@@ -44,7 +44,7 @@ const ViewTeacherCourse = () => {
       axios
         .get(
           String(import.meta.env.VITE_BACKEND_URL) +
-            "/api/v1/user/teacher/course",
+          "/api/v1/user/teacher/course",
           {
             headers: {
               instructorid: "66feea7bde656c626f7b53c8",

@@ -4,39 +4,30 @@ import { Example } from '../../components/Sidebar.jsx';
 import { SquishyCard } from '../../components/index.js';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { Outlet } from 'react-router-dom';
+import axios from 'axios';
+import { getAllCoursesByBranchRoute } from '../../APIRoutes/index.js';
 
 const Courses = () => {
     const [courses, setCourses] = useState([]);
-
+    const user = JSON.parse(localStorage.getItem('user'));
+    const branch = user.branch;
+    console.log(branch)
     useEffect(() => {
-        const arr = [
-            {
-                name: 'Introduction to Machine Learning',
-                description: 'A beginner course on machine learning concepts and algorithms.',
-                branch: 'Computer Science',
-            },
-            {
-                name: 'Digital Signal Processing',
-                description: 'Explore the principles of digital signals and systems.',
-                branch: 'Electronics',
-            },
-            {
-                name: 'Thermodynamics',
-                description: 'Study the fundamentals of heat and energy transfer.',
-                branch: 'Mechanical Engineering',
-            },
-            {
-                name: 'Structural Analysis',
-                description: 'Understand the mechanics of structures and building design.',
-                branch: 'Civil Engineering',
-            },
-            {
-                name: 'Organizational Behavior',
-                description: 'Learn about the behavior of individuals and groups within organizations.',
-                branch: 'Business Administration',
-            },
-        ];
-        setCourses(arr);
+        const fetchCourses = async () => {
+            try {
+                const response = await axios.get(`${getAllCoursesByBranchRoute}/${branch}`, {
+                    withCredentials: true
+                });
+                if (response.data.success) {
+                    setCourses(response.data.courses);
+                    localStorage.setItem('student-courses', JSON.stringify(response.data.courses));
+                    console.log(courses);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchCourses();
     }, []);
     // Reference for the scrollable container
     const carouselRef = useRef(null);
@@ -50,14 +41,14 @@ const Courses = () => {
         }
     };
     return (
-        <div>
+        <div className='bg-white'>
             <div className='relative w-full mt-4'>
                 {/* Left Arrow */}
                 <button
-                    className='absolute left-0 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-200'
+                    className='absolute left-0 z-10 p-2 mx-4 bg-white rounded-full shadow-lg hover:bg-gray-200'
                     onClick={() => scroll('left')}
                 >
-                    <FiChevronLeft size={24} />
+                    <FiChevronLeft size={24} className='text-black' />
                 </button>
 
                 {/* Carousel container */}
@@ -68,7 +59,7 @@ const Courses = () => {
                     {
                         courses.map((course, index) => {
                             return (
-                                <SquishyCard name={course.name} description={course.description} branch={course.branch} key={index} />
+                                <SquishyCard name={course.name} description={course.description} branch={course.branch} studentId={user._id} students={course.students} key={index} />
                             )
                         })
                     }
@@ -76,21 +67,11 @@ const Courses = () => {
 
                 {/* Right Arrow */}
                 <button
-                    className='absolute top-0 right-0 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-200'
+                    className='absolute top-0 right-0 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-200 mx-4'
                     onClick={() => scroll('right')}
                 >
-                    <FiChevronRight size={24} />
+                    <FiChevronRight size={24} className='text-black' />
                 </button>
-            </div>
-
-            {/* New Section below Carousel */}
-            <div className='bg-red-400 w-full'>
-                <SquishyCard />
-                <SquishyCard />
-                <SquishyCard />
-                <SquishyCard />
-                <SquishyCard />
-                <SquishyCard />
             </div>
         </div>
     )

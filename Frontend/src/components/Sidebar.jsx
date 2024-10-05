@@ -40,7 +40,7 @@ const Sidebar = () => {
             <TitleSection open={open} />
 
             <div className="space-y-1">
-                <Link to={'/dashboard'}>
+                <Link to={'/home'}>
                     <Option
                         Icon={FiHome}
                         title="Dashboard"
@@ -59,7 +59,7 @@ const Sidebar = () => {
                         notifs={3}
                     />
                 </Link>
-                <Link>
+                <Link to={'/home/mycourses'}>
                     <Option
                         Icon={MdOutlineMenuBook}
                         title="My Courses"
@@ -133,7 +133,7 @@ const Option = ({ Icon, title, selected, setSelected, open, notifs }) => {
 const TitleSection = ({ open }) => {
     return (
         <div className="mb-3 border-b border-slate-300 pb-3">
-            <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100">
+            <div className="flex cursor-pointer items-center justify-between rounded-md transition-colors hover:bg-slate-100 hover:text-black">
                 <div className="flex items-center gap-2">
                     <Logo />
                     {open && (
@@ -143,8 +143,8 @@ const TitleSection = ({ open }) => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.125 }}
                         >
-                            <span className="block text-xs font-semibold">EduVerse</span>
-                            <span className="block text-xs text-slate-500">Pro Plan</span>
+                            <span className="block text-xs font-semibold text-black">EduVerse</span>
+                            <span className="block text-xs text-black">Pro Plan</span>
                         </motion.div>
                     )}
                 </div>
@@ -195,7 +195,7 @@ const ToggleClose = ({ open, setOpen }) => {
                     className="grid size-10 place-content-center text-lg"
                 >
                     <FiChevronsRight
-                        className={`transition-transform ${open && "rotate-180"}`}
+                        className={`transition-transform ${open && "rotate-180"} text-black`}
                     />
                 </motion.div>
                 {open && (
@@ -204,7 +204,7 @@ const ToggleClose = ({ open, setOpen }) => {
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.125 }}
-                        className="text-xs font-medium"
+                        className="text-xs font-medium text-black"
                     >
                         Hide
                     </motion.span>
