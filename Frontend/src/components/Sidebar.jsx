@@ -66,7 +66,7 @@ const Sidebar = () => {
                         />
                     </Link>
                 }
-                <Link to={'/home/calendar'}>
+                <Link to={'home/calendar'}>
                     <Option
                         Icon={FaCalendarAlt}
                         title="Calendar"

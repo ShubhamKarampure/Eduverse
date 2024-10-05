@@ -23,7 +23,7 @@ const SquishyCard = ({
   branch,
   studentId,
   students = [],
-  courseId,
+  id,
   enrollmentKey,
   background
 }) => {
@@ -43,7 +43,7 @@ const SquishyCard = ({
           description={description}
           studentId={studentId}
           students={students}
-          courseId={courseId}
+          courseId={id}
           enrollmentKey={enrollmentKey}
           background={background}
         />
@@ -104,7 +104,7 @@ const Card = ({
             isClosable: true,
           });
           setEnrollmentSuccess(true);
-          setIsOpen(false); 
+          setIsOpen(false);
           // Close dialog on successful enrollment
         }
       })
@@ -144,7 +144,7 @@ const Card = ({
             backgroundImage: `url(${background})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            filter: "blur(1px)",
+            filter: "blur(1px)", // Apply blur to the background image
           }}
         ></div>
 

@@ -24,7 +24,7 @@ const Courses = () => {
         if (response.data.success) {
           setCourses(response.data.courses);
           localStorage.setItem(
-            "student-courses",
+            user.role==='Student'?"student-courses":'teacher-courses',
             JSON.stringify(response.data.courses)
           );
         }
@@ -33,7 +33,7 @@ const Courses = () => {
       }
     };
     fetchCourses();
-  }, [branch]);
+  }, []);
 
   // Reference for the scrollable container
   const carouselRef = useRef(null);
@@ -73,7 +73,7 @@ const Courses = () => {
                 studentId={user._id}
                 students={course.students}
                 key={index}
-                courseId={course._id}
+                id={course._id}
                 Key={course.enrollmentKey}
                 background={imageUrl}
               />
