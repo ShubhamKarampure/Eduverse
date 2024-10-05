@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 const ShuffleHero = () => {
+  const token = localStorage.getItem('token');
   return (
     <section className="w-full px-8 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto">
       <div>
         <span className="block mb-4 text-xs md:text-sm text-indigo-500 font-medium">
-          Better every day
+        Elevate Your Learning Experience
         </span>
         <h3 className="text-4xl md:text-6xl font-semibold">
         Transforming Learning with AI-Powered Education
@@ -15,9 +16,21 @@ const ShuffleHero = () => {
         <p className="text-base md:text-lg text-slate-700 my-4 md:my-6">
         Empower your education with intelligent tools designed to adapt to your pace, track your progress, and provide instant feedback. Whether you're a student or a teacher, our platform helps you stay ahead.
         </p>
-        <Link to={'/home'} className="bg-indigo-500 text-white font-medium py-2 px-4 rounded transition-all hover:bg-indigo-600 active:scale-95" >
-          Browse Courses
-        </Link>
+        {token ? (
+          <Link
+            to="/home"
+            className="bg-indigo-500 text-white font-medium py-2 px-4 rounded transition-all hover:bg-indigo-600 active:scale-95"
+          >
+            Explore Courses
+          </Link>
+        ) : (
+          <Link
+            to="/login"
+            className="bg-indigo-500 text-white font-medium py-2 px-4 rounded transition-all hover:bg-indigo-600 active:scale-95"
+          >
+            Explore Courses
+          </Link>
+        )}
       </div>
       <ShuffleGrid />
     </section>
@@ -44,7 +57,7 @@ const shuffle = (array) => {
 const squareData = [
   {
     id: 1,
-    src: "https://images.unsplash.com/photo-1547347298-4074fc3086f0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
+    src: "https://plus.unsplash.com/premium_photo-1676637656166-cb7b3a43b81a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     id: 2,

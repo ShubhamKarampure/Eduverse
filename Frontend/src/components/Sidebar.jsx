@@ -36,6 +36,15 @@ const Sidebar = () => {
             <TitleSection open={open} />
 
             <div className="space-y-1">
+                <Link to={'/home/profile'}>
+                    <Option
+                        Icon={CgProfile}
+                        title="Profile"
+                        selected={selected}
+                        setSelected={setSelected}
+                        open={open}
+                    />
+                </Link>
                 <Link to={`${user.role === "Student" ? "/home" : "/home/teacher"}`} >
                     <Option
                         Icon={FiHome}
@@ -45,6 +54,7 @@ const Sidebar = () => {
                         open={open}
                     />
                 </Link>
+                
                 <Link>
                     <Option
                         Icon={MdAssignment}
@@ -70,15 +80,6 @@ const Sidebar = () => {
                     <Option
                         Icon={FaCalendarAlt}
                         title="Calender"
-                        selected={selected}
-                        setSelected={setSelected}
-                        open={open}
-                    />
-                </Link>
-                <Link to={'/home/profile'}>
-                    <Option
-                        Icon={CgProfile}
-                        title="Profile"
                         selected={selected}
                         setSelected={setSelected}
                         open={open}
