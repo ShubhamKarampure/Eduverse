@@ -77,7 +77,6 @@ export const submitAssignment = async (req, res) => {
         const studentId = req.params.id;
         const { submissionFile } = req.files;
         const { assignmentId } = req.body;
-
         // Find the assignment by ID
         const assignment = await AssignmentModel.findById(assignmentId);
 

@@ -189,6 +189,11 @@ export const enrollStudentController = async (req, res) => {
         const student = req.params.id
         const { courseId, enrollmentKey } = req.body
         const Course = await CourseModel.findById(courseId)
+        if(Course.students.find((currstudent)=>currstudent==student))
+                return res.status(401).json({
+                    success:false,
+                    message:"Student already enrolled"
+                })
         const Student = await UserModel.findById(student)
         if (!Course)
             return res.status(401).json({
@@ -220,6 +225,60 @@ export const enrollStudentController = async (req, res) => {
         })
     }
 }
+export const unenrollStudentController = async (req, res) => {
+    try {
+        const studentId = req.params.id;
+        const { courseId, enrollmentKey } = req.body;
+
+        // Find the course and student
+        const Course = await CourseModel.findById(courseId);
+        const Student = await UserModel.findById(studentId);
+
+        if (!Course) {
+            return res.status(404).json({
+                success: false,
+                message: "Course not found",
+            });
+        }
+
+        if (!Student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found",
+            });
+        }
+
+        // Verify the enrollment key
+        const valid = await bcrypt.compare(enrollmentKey, Course.enrollmentKey);
+        if (!valid) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Enrollment Key",
+            });
+        }
+
+        // Remove the student from the course's student list
+        Course.students = Course.students.filter(student => student.toString() !== studentId);
+
+        Student.enrolledCourses = Student.enrolledCourses.filter(course => course.toString() !== courseId);
+
+        // Save the changes
+        await Course.save();
+        await Student.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Student unenrolled successfully",
+            Course,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
 
 export const generateQuizController = async (req, res) => {
     try {
