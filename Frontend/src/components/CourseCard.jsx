@@ -25,6 +25,7 @@ const SquishyCard = ({
   students = [],
   courseId,
   enrollmentKey,
+  background
 }) => {
   return (
     <section className="px-4 py-12">
@@ -37,6 +38,7 @@ const SquishyCard = ({
           students={students}
           courseId={courseId}
           enrollmentKey={enrollmentKey}
+          background={background}
         />
       </div>
     </section>
@@ -50,7 +52,7 @@ const Card = ({
   studentId,
   students = [],
   courseId,
-  enrollmentKey,
+  background
 }) => {
   const navigate = useNavigate();
   const toast = useToast();
@@ -138,6 +140,16 @@ const Card = ({
         }}
         className="relative h-96 w-80 shrink-0 overflow-hidden rounded-xl bg-indigo-500 p-8"
       >
+        <div
+                className="absolute inset-0"
+                style={{
+                    backgroundImage: `url(${background})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    filter: "blur(1px)", // Apply blur to the background image
+                }}
+            ></div>
+
         <div className="relative z-10 text-white">
           <span className="mb-3 block w-fit rounded-full bg-white/30 px-3 py-0.5 text-sm font-light text-white">
             {branch}
@@ -217,6 +229,7 @@ const Card = ({
     </>
   );
 };
+
 
 const Background = () => {
   return (

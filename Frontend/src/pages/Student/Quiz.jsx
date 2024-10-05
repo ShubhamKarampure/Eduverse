@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { quizRoute } from '../../APIRoutes';
+import { useParams } from 'react-router-dom';
 
 const Quiz = () => {
     const [quizData, setQuizData] = useState([]);
@@ -9,13 +10,12 @@ const Quiz = () => {
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [userAnswers, setUserAnswers] = useState([]);
     const user = JSON.parse(localStorage.getItem('user'));
-    const courseId = "67010a1224b7e62f0abab638";
-
+    const { id } = useParams();
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`${quizRoute}/${courseId}`, {
+                const response = await axios.get(`${quizRoute}/${id}`, {
                     withCredentials: true
                 });
                 if (response.data.success) {

@@ -6,3 +6,5 @@ export const getAllCoursesByBranchRoute = `${host}/student/course/`
 export const getAllCoursesByInstructor = `${host}/teacher/course/`
 export const quizRoute = `${host}/teacher/course/get-course`
 export const studentCourseEnrollment=`${host}/student/course`
+export const getAssignments = `${host}/assignments`
+export const submitAssignment = `${host}/student/assignment`
