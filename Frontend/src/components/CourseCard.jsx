@@ -44,7 +44,7 @@ const Card = ({ name, description, branch }) => {
                 >
                     {name}
                 </motion.span>
-                <p>
+                <p className="line-clamp-5">
                     {description}
                 </p>
             </div>

@@ -63,7 +63,7 @@ const Courses = () => {
                 {/* Carousel container */}
                 <div
                     ref={carouselRef}
-                    className='flex overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar space-x-4 p-4 custom-scrollbar'
+                    className='flex overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar space-x-4 p-4'
                 >
                     {
                         courses.map((course, index) => {
