@@ -21,6 +21,7 @@ const AssignmentSchema=mongoose.Schema({
         type:[{
             student:mongoose.Types.ObjectId,
             submission:String,
+            public_id:String,
             submissionDate:Date,
             late:Boolean,
             grade:Number,

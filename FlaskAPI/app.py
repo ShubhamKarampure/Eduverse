@@ -158,6 +158,67 @@ def quiz():
     except json.JSONDecodeError:
         return jsonify({"error": "Response is not valid JSON."}), 500
 
+@app.route('/quiz/feedback', methods=['POST'])
+def quiz_feedback():
+    data = request.get_json()
+
+    # Check if required fields are present
+    if not data or 'questions' not in data:
+        return jsonify({"error": "Missing required fields in the request."}), 400
+
+    questions = data['questions']  # Expecting a list of question objects
+    feedback_list = []  # To store feedback for each question
+
+    for item in questions:
+        question = item.get('question')
+        options = item.get('options')
+        correct_answer = item.get('answer')
+        user_answer = item.get('user_answer')
+
+        # Validate each question item
+        if not question or not options or correct_answer is None or user_answer is None:
+            return jsonify({"error": "Missing fields in one or more question items."}), 400
+
+        # Create a prompt for generating AI feedback with JSON template
+        prompt = f"""
+        You are an AI grading assistant. Provide feedback based on the following question, options, correct answer, and user's answer.
+
+        Question: {question}
+        Options: {options}
+        Correct Answer: {correct_answer}
+        User's Answer: {user_answer}
+
+        Generate the feedback in valid JSON format, structured as follows:
+
+        {{
+            "feedback": "Your feedback message here."
+        }}
+
+        only give feedback no need and make it polite.
+        Provide constructive feedback on the user's answer, indicating whether it was correct or not and offering tips for improvement.
+        """
+
+        # Create a completion request to generate feedback
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=1,
+            max_tokens=150,
+            top_p=1,
+            stream=False,
+            response_format={"type": "json_object"},
+            stop=None
+        )
+        message_content = completion.choices[0].message.content
+
+        # If the content is in JSON format, parse it
+        try:
+            feedback_response = json.loads(message_content.strip())  # Parse the string into a JSON object
+            feedback_list.append(feedback_response)  # Add feedback to the list
+        except json.JSONDecodeError:
+            return jsonify({"error": "Response is not valid JSON."}), 500
+
+    return jsonify({"feedback": feedback_list})  # Return the list of feedback responses
 
 if __name__ == '__main__':
     app.run(debug=True)

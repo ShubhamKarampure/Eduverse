@@ -1,6 +1,7 @@
 import { CourseModel } from "../models/courseModel.js";
 import { AssignmentModel } from "../models/assignmentModel.js";
 import { uploadOnCloud } from "../utils/cloudinary.js";
+import { deleteFromCloud } from "../utils/cloudinary.js";
 import dotenv from 'dotenv'
 import axios from 'axios'
 dotenv.config()
@@ -71,34 +72,81 @@ export const updateAssignmentController=async(req,res)=>{
     }
 }
 
-export const submitAssignment=async(req,res)=>{
+export const submitAssignment = async (req, res) => {
     try {
-        const studentId=req.params.id
-        const {submissionFile}=req.files
-        console.log(submissionFile);
-        const {assignmentId} =req.body
-        if(submissionFile.mimetype!='application/pdf')
+        const studentId = req.params.id;
+        const { submissionFile } = req.files;
+        const { assignmentId } = req.body;
+
+        // Find the assignment by ID
+        const assignment = await AssignmentModel.findById(assignmentId);
+
+        if (!assignment) {
+            return res.status(404).json({
+                success: false,
+                message: "Assignment not found"
+            });
+        }
+
+        // Check if the file is a PDF
+        if (submissionFile.mimetype !== 'application/pdf') {
             return res.status(401).json({
-                success:false,
-                message:"Use only pdf format"
-            })
-        const submission=await uploadOnCloud(submissionFile.tempFilePath)
-        const assignment=await AssignmentModel.findById(assignmentId)
-        assignment.submissions.push({student:studentId,submission,submissionDate:Date.now(),late:(Date.now()>assignment.deadline)})
-        assignment.save()
+                success: false,
+                message: "Use only pdf format"
+            });
+        }
+
+        // Upload the submission file to the cloud
+        const {public_id,url} = await uploadOnCloud(submissionFile.tempFilePath);
+        console.log("public_id,url", public_id,url);
+
+        // Check if the student has already submitted
+        const index = assignment.submissions.findIndex(submission => submission.student == studentId);
+        console.log('Submission index:', index);
+
+        if (index === -1) {
+            // New submission, push to the submissions array
+            assignment.submissions.push({
+                student: studentId,
+                submission:url,
+                public_id,
+                submissionDate: Date.now(),
+                late: Date.now() > assignment.deadline
+            });
+        } else {
+            // Update the existing submission
+            const existingSubmission = assignment.submissions[index];
+            console.log("public id to be deleted:",existingSubmission.public_id);            
+            const response = await deleteFromCloud(existingSubmission.public_id)
+            console.log(response);            
+            // Keep the rest of the fields and update only url and public_id
+            assignment.submissions[index] = {
+                student:existingSubmission.student,
+                submission:url,
+                public_id,
+                submissionDate: Date.now(),
+                late: Date.now() > assignment.deadline
+            };
+        }
+
+        // Save the updated assignment
+        await assignment.save();
+
+        // Respond with success
         res.status(201).json({
-            success:true,
-            message:"Assignment submitted",
+            success: true,
+            message: "Assignment submitted",
             assignment
-        })
+        });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return res.status(500).json({
             success: false,
             message: 'Internal Server Error',
         });
     }
-}
+};
+
 
 export const getAssignmentsByCourseController=async(req,res)=>{
     try {

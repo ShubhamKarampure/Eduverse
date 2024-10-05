@@ -2,6 +2,7 @@ import { CourseModel } from "../models/courseModel.js";
 import { AssignmentModel } from "../models/assignmentModel.js";
 import bcrypt from 'bcrypt'
 import axios from 'axios'
+import { UserModel } from "../models/userModel.js";
 
 export const createCourseController=async (req,res)=>{
     try {
@@ -114,12 +115,12 @@ export const enrollStudentController=async(req,res)=>{
         const student=req.params.id
         const {courseId,enrollmentKey}=req.body
         const Course=await CourseModel.findById(courseId)
+        const Student=await UserModel.findById(student)
         if(!Course)
             return res.status(401).json({
                 success:false,
                 message:"Course not found",
-            })  
-        
+            })          
         const valid=await bcrypt.compare(enrollmentKey,Course.enrollmentKey)
         if(!valid){
             return res.status(400).json({
@@ -127,9 +128,11 @@ export const enrollStudentController=async(req,res)=>{
                 message:"Invalid Enrollment Key"
             })
         }  
-
+        
         Course.students.push(student)
+        Student.enrolledCourses.push(courseId)
         await Course.save()
+        await Student.save()
         res.status(201).json({
             success:true,
             message:"Student enrolled",
