@@ -4,6 +4,7 @@ import { uploadOnCloud } from "../utils/cloudinary.js";
 import bcrypt from 'bcrypt'
 import axios from 'axios'
 import { UserModel } from "../models/userModel.js";
+import { request } from "express";
 
 export const createCourseController = async (req, res) => {
     try {
@@ -238,6 +239,31 @@ export const generateQuizController = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Generated quiz",
+            course,
+            quiz: response.data.questions
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+export const getCourseById = async (req, res) => {
+    try {
+        const courseId = req.params.id;
+        const course = await CourseModel.findById(courseId);
+        if (!course) {
+            return res.status(404).json({
+                success: false,
+                message: "Course not found"
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: "Course found",
             course
         })
     } catch (error) {
@@ -248,5 +274,6 @@ export const generateQuizController = async (req, res) => {
         })
     }
 }
+
 
 

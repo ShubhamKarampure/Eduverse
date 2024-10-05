@@ -21,7 +21,7 @@ const SquishyCard = ({ name, description, branch, studentId, students = [] }) =>
 const Card = ({ name, description, branch, studentId, students = [] }) => {
     // Ensure students is defined and is an array
     const isEnrolled = Array.isArray(students) && students.includes(studentId);
-
+    const user = JSON.parse(localStorage.getItem('user'));
     return (
         <motion.div
             whileHover="hover"
@@ -62,7 +62,7 @@ const Card = ({ name, description, branch, studentId, students = [] }) => {
 
             {/* Button to either "Open course" or "Enroll now" */}
             <button className="absolute bottom-4 left-4 right-4 z-20 rounded border-2 border-white bg-white py-2 text-center font-mono font-black uppercase text-neutral-800 backdrop-blur transition-colors hover:bg-white/30 hover:text-white">
-                {isEnrolled ? "Open course" : "Enroll now"}
+                {isEnrolled || user.role === "Teacher" ? "Open course" : "Enroll now"}
             </button>
 
             <Background />
