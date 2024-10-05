@@ -11,7 +11,7 @@ const Courses = () => {
     const [courses, setCourses] = useState([]);
     const user = JSON.parse(localStorage.getItem('user'));
     const branch = user?.branch;
-    console.log(branch)
+
     useEffect(() => {
         const fetchCourses = async () => {
             try {
@@ -21,14 +21,14 @@ const Courses = () => {
                 if (response.data.success) {
                     setCourses(response.data.courses);
                     localStorage.setItem('student-courses', JSON.stringify(response.data.courses));
-                    console.log(courses);
                 }
             } catch (error) {
                 console.log(error);
             }
-        }
+        };
         fetchCourses();
-    }, []);
+    }, [branch]);
+
     // Reference for the scrollable container
     const carouselRef = useRef(null);
 
@@ -40,6 +40,7 @@ const Courses = () => {
             carouselRef.current.scrollBy({ left: 300, behavior: 'smooth' });
         }
     };
+
     return (
         <div className='bg-white'>
             <div className='relative w-full mt-4'>
@@ -58,8 +59,18 @@ const Courses = () => {
                 >
                     {
                         courses.map((course, index) => {
+                            const imageUrl = course?.image?.url; // Safely access image URL
                             return (
-                                <SquishyCard name={course.name} description={course.description} branch={course.branch} studentId={user._id} students={course.students} key={index} />
+                                <SquishyCard
+                                    id={course._id}
+                                    name={course.name}
+                                    description={course.description}
+                                    branch={course.branch}
+                                    studentId={user._id}
+                                    students={course.students}
+                                    key={index}
+                                    background={imageUrl} // Pass the image URL to SquishyCard
+                                />
                             )
                         })
                     }
@@ -75,6 +86,6 @@ const Courses = () => {
             </div>
         </div>
     )
-}
+};
 
-export default Courses
+export default Courses;

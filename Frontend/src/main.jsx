@@ -12,6 +12,8 @@ import Register from "./pages/Auth/Register.jsx";
 import Login from "./pages/Auth/Login.jsx";
 import MyCourses from "./pages/Student/MyCourses.jsx";
 import Quiz from "./pages/Student/Quiz.jsx";
+import ProfilePage from "./pages/Student/Profile.jsx";
+import CoursePage from "./pages/Student/CourseDetails.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,8 +30,14 @@ const router = createBrowserRouter([
         path: '/mycourses',
         element: <MyCourses />,
       }, {
-        path: '/quiz',
+        path: '/quiz/:id',
         element: <Quiz />
+      }, {
+        path: '/profile',
+        element: <ProfilePage />
+      }, {
+        path: '/course-details/:id',
+        element: <CoursePage />
       }
     ],
     errorElement: <PageNotFound />

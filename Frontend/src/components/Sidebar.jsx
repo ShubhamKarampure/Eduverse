@@ -10,6 +10,7 @@ import {
     FiTag,
     FiUsers,
 } from "react-icons/fi";
+import { CgProfile } from "react-icons/cg";
 import { MdAssignment } from "react-icons/md";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdOutlineMenuBook } from "react-icons/md";
@@ -74,6 +75,15 @@ const Sidebar = () => {
                     <Option
                         Icon={FaCalendarAlt}
                         title="Calender"
+                        selected={selected}
+                        setSelected={setSelected}
+                        open={open}
+                    />
+                </Link>
+                <Link to={'/profile'}>
+                    <Option
+                        Icon={CgProfile}
+                        title="Profile"
                         selected={selected}
                         setSelected={setSelected}
                         open={open}

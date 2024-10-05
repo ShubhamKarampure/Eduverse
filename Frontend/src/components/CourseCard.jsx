@@ -1,27 +1,98 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
-const SquishyCard = ({ name, description, branch, studentId, students = [] }) => {
+const SquishyCard = ({ id, name, description, branch, studentId, students = [], background }) => {
     return (
         <section className="px-4 py-12">
             <section className="px-4 py-12">
                 <div className="mx-auto w-fit">
                     <Card
+                        id={id}
                         name={name}
                         branch={branch}
                         description={description}
                         studentId={studentId}
                         students={students}
+                        background={background}
                     />
                 </div>
             </section>
         </section>
     );
 };
+//     // Ensure students is defined and is an array
+//     const isEnrolled = Array.isArray(students) && students.includes(studentId);
+//     const user = JSON.parse(localStorage.getItem('user'));
+//     console.log(background)
+//     const navigate = useNavigate();
+//     const handleNavigate = (id_) => {
+//         if (isEnrolled) {
+//             navigate(`/course-details/${id_}`);
+//         }
+//     }
+//     return (
+//         <motion.div
+//             whileHover="hover"
+//             transition={{
+//                 duration: 1,
+//                 ease: "backInOut",
+//             }}
+//             variants={{
+//                 hover: {
+//                     scale: 1.05,
+//                 },
+//             }}
+//             className="relative h-96 w-80 shrink-0 overflow-hidden rounded-xl bg-indigo-500 p-8" style={{
+//                 backgroundImage: `url(${background})`,
+//                 backgroundSize: "cover",
+//                 backgroundPosition: "center",
+//             }}
+//         >
+//             <div className="relative z-10 text-black">
+//                 <span className="mb-3 block w-fit rounded-full bg-white/30 px-3 py-0.5 text-sm font-light text-black">
+//                     {branch}
+//                 </span>
+//                 <motion.span
+//                     initial={{ scale: 0.85 }}
+//                     variants={{
+//                         hover: {
+//                             scale: 1,
+//                         },
+//                     }}
+//                     transition={{
+//                         duration: 1,
+//                         ease: "backInOut",
+//                     }}
+//                     className="my-2 block origin-top-left font-mono text-3xl font-black leading-[1.2]"
+//                 >
+//                     {name}
+//                 </motion.span>
+//                 <p className="line-clamp-3 text-ellipsis overflow-hidden font-bold text">
+//                     {description}
+//                 </p>
+//             </div>
 
-const Card = ({ name, description, branch, studentId, students = [] }) => {
-    // Ensure students is defined and is an array
+//             {/* Button to either "Open course" or "Enroll now" */}
+//             <button className="absolute bottom-4 left-4 right-4 z-20 rounded border-2 border-white bg-white py-2 text-center font-mono font-black uppercase text-neutral-800 backdrop-blur transition-colors hover:bg-white/30 hover:text-black" onClick={() => handleNavigate(id)}>
+//                 {isEnrolled || user.role === "Teacher" ? "Open course" : "Enroll now"}
+//             </button>
+
+//             {/* <Background /> */}
+//         </motion.div>
+//     );
+// };
+
+const Card = ({ id, name, description, branch, studentId, students = [], background }) => {
     const isEnrolled = Array.isArray(students) && students.includes(studentId);
     const user = JSON.parse(localStorage.getItem('user'));
+    const navigate = useNavigate();
+
+    const handleNavigate = (id_) => {
+        if (isEnrolled) {
+            navigate(`/course-details/${id_}`);
+        }
+    };
+
     return (
         <motion.div
             whileHover="hover"
@@ -34,10 +105,22 @@ const Card = ({ name, description, branch, studentId, students = [] }) => {
                     scale: 1.05,
                 },
             }}
-            className="relative h-96 w-80 shrink-0 overflow-hidden rounded-xl bg-indigo-500 p-8"
+            className="relative h-96 w-80 shrink-0 overflow-hidden rounded-xl p-8"
         >
-            <div className="relative z-10 text-white">
-                <span className="mb-3 block w-fit rounded-full bg-white/30 px-3 py-0.5 text-sm font-light text-white">
+            {/* Background Image with Blur */}
+            <div
+                className="absolute inset-0"
+                style={{
+                    backgroundImage: `url(${background})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    filter: "blur(1px)", // Apply blur to the background image
+                }}
+            ></div>
+
+            {/* Content on top of the blurred background */}
+            <div className="relative z-10 text-black">
+                <span className="mb-3 block w-fit rounded-full bg-white/30 px-3 py-0.5 text-sm font-light text-black">
                     {branch}
                 </span>
                 <motion.span
@@ -55,20 +138,22 @@ const Card = ({ name, description, branch, studentId, students = [] }) => {
                 >
                     {name}
                 </motion.span>
-                <p className="line-clamp-3 text-ellipsis overflow-hidden">
+                <p className="line-clamp-3 text-ellipsis overflow-hidden font-bold text-md">
                     {description}
                 </p>
             </div>
 
             {/* Button to either "Open course" or "Enroll now" */}
-            <button className="absolute bottom-4 left-4 right-4 z-20 rounded border-2 border-white bg-white py-2 text-center font-mono font-black uppercase text-neutral-800 backdrop-blur transition-colors hover:bg-white/30 hover:text-white">
+            <button
+                className="absolute bottom-4 left-4 right-4 z-20 rounded border-2 border-white bg-white py-2 text-center font-mono font-black uppercase text-neutral-800 backdrop-blur transition-colors hover:bg-white/30 hover:text-black"
+                onClick={() => handleNavigate(id)}
+            >
                 {isEnrolled || user.role === "Teacher" ? "Open course" : "Enroll now"}
             </button>
-
-            <Background />
         </motion.div>
     );
 };
+
 
 const Background = () => {
     return (
