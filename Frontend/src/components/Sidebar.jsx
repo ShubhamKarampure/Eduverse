@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import {
-    FiBarChart,
     FiChevronDown,
     FiChevronsRight,
-    FiDollarSign,
     FiHome,
-    FiMonitor,
-    FiShoppingCart,
-    FiTag,
-    FiUsers,
 } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { MdAssignment } from "react-icons/md";
@@ -42,7 +36,7 @@ const Sidebar = () => {
             <TitleSection open={open} />
 
             <div className="space-y-1">
-                <Link to={`${user.role === "Student" ? "/" : "/teacher"}`}>
+                <Link to={`${user.role === "Student" ? "/home" : "/home/teacher"}`} >
                     <Option
                         Icon={FiHome}
                         title="Dashboard"
@@ -62,7 +56,7 @@ const Sidebar = () => {
                     />
                 </Link>
                 {
-                    user.role === "Student" && <Link to={'/mycourses'}>
+                    user.role === "Student" && <Link to={'/home/mycourses'}>
                         <Option
                             Icon={MdOutlineMenuBook}
                             title="My Courses"
@@ -81,7 +75,7 @@ const Sidebar = () => {
                         open={open}
                     />
                 </Link>
-                <Link to={user.role==='Student'?'/profile':'/teacherProfile'}>
+                <Link to={user.role==='Student'?'home/profile':'home/teacherProfile'}>
                     <Option
                         Icon={CgProfile}
                         title="Profile"

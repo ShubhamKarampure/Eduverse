@@ -15,32 +15,37 @@ import Quiz from "./pages/Student/Quiz.jsx";
 import ProfilePage from "./pages/Student/Profile.jsx";
 import CoursePage from "./pages/Student/CourseDetails.jsx";
 import TeacherProfile from "./components/TeacherProfile.jsx";
+import LandingPage from "./pages/landingPage.jsx";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path:"/",
+    element:<LandingPage/>
+  },
+  {
+    path: "/home",
     element: <Home />,
     children: [
       {
-        path: "/teacher/",
+        path: "teacher",
         element: <ViewTeacherCourse />
       }, {
-        path: "/",
+        path: "",
         element: <Courses />,
       }, {
-        path: '/mycourses',
+        path: "mycourses",
         element: <MyCourses />,
       },{
-        path: '/calendar',
+        path: "calendar",
         element: <Calendar/>
       }, {
-        path: '/quiz/:id',
+        path: 'quiz/:id',
         element: <Quiz />
       }, {
-        path: '/profile',
+        path: 'profile',
         element: <ProfilePage />
       }, {
-        path: '/course-details/:id',
+        path: 'course-details/:id',
         element: <CoursePage />
       },{
         path: 'teacherProfile',

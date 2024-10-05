@@ -80,7 +80,7 @@ const Card = ({
 
   const clickHandler = () => {
     if (enrollmentSuccess || user.role.toLowerCase() === "teacher") {
-      navigate(`/course-details/${courseId}`);
+      navigate(`/home/course-details/${courseId}`);
     } else {
       setIsOpen(true);
     }
@@ -90,7 +90,7 @@ const Card = ({
     e.preventDefault();
     setIsLoading(true);
     axios
-      .post(`${studentCourseEnrollment}/${user._id}/`, {
+      .post(`${studentCourseEnrollment}/${user._id}`, {
         enrollmentKey: formData.key,
         courseId: courseId,
       })
@@ -104,7 +104,8 @@ const Card = ({
             isClosable: true,
           });
           setEnrollmentSuccess(true);
-          setIsOpen(false);
+          setIsOpen(false); 
+          // Close dialog on successful enrollment
         }
       })
       .catch((error) => {
@@ -175,7 +176,7 @@ const Card = ({
           className="absolute bottom-4 left-4 right-4 z-20 rounded border-2 border-white bg-white py-2 text-center font-mono font-black uppercase text-neutral-800 backdrop-blur transition-colors hover:bg-white/30 hover:text-white"
           onClick={clickHandler}
         >
-          {user.role.toLowerCase() === "teacher" || enrollmentSuccess
+          {(user.role.toLowerCase() === "teacher" || enrollmentSuccess)
             ? "Open course"
             : "Enroll now"}
         </button>

@@ -189,6 +189,11 @@ export const enrollStudentController = async (req, res) => {
         const student = req.params.id
         const { courseId, enrollmentKey } = req.body
         const Course = await CourseModel.findById(courseId)
+        if(Course.students.find(student))
+                return res.status(401).json({
+                    success:false,
+                    message:"Student already enrolled"
+                })
         const Student = await UserModel.findById(student)
         if (!Course)
             return res.status(401).json({
