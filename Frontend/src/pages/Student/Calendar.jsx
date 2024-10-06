@@ -69,7 +69,7 @@ const DeadlineCalendar = memo(() => {
         className="rounded-lg border border-gray-300 shadow-md"
       />
       <div className="mt-4">
-        <h3 className="font-semibold">Selected Dates:</h3>
+        <h3 className="font-semibold">Deadlines :</h3>
         {error ? (
           <p className="text-red-500">{error}</p>
         ) : assignments.length > 0 ? (
