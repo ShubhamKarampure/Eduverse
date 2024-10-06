@@ -6,7 +6,7 @@ import {
 } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { MdAssignment } from "react-icons/md";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaBlog, FaCalendarAlt } from "react-icons/fa";
 import { MdOutlineMenuBook } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -45,10 +45,10 @@ const Sidebar = () => {
                         open={open}
                     />
                 </Link>
-                <Link>
+                <Link to={user.role==='Student'?'/home':'/home/teacher-add-course'}>
                     <Option
                         Icon={MdAssignment}
-                        title="Assignments"
+                        title={user.role==='Student'?'Assignments':'Add Courses'}
                         selected={selected}
                         setSelected={setSelected}
                         open={open}
@@ -70,6 +70,15 @@ const Sidebar = () => {
                     <Option
                         Icon={FaCalendarAlt}
                         title="Calendar"
+                        selected={selected}
+                        setSelected={setSelected}
+                        open={open}
+                    />
+                </Link>
+                <Link to={'/home/blog'}>
+                    <Option
+                        Icon={FaBlog}
+                        title="Blog"
                         selected={selected}
                         setSelected={setSelected}
                         open={open}

@@ -16,6 +16,8 @@ import ProfilePage from "./pages/Student/Profile.jsx";
 import CoursePage from "./pages/Student/CourseDetails.jsx";
 import TeacherProfile from "./components/TeacherProfile.jsx";
 import LandingPage from "./pages/landingPage.jsx";
+import Blog from "./pages/Blog.jsx";
+import TeacherCourse from './components/TeacherCourse.jsx'
 
 const router = createBrowserRouter([
   {
@@ -51,6 +53,12 @@ const router = createBrowserRouter([
       },{
         path: 'teacherProfile',
         element:<TeacherProfile/>
+      },{
+        path: 'blog',
+        element: <Blog/>
+      },{
+        path: '/home/teacher-add-course',
+        element: <TeacherCourse/>
       }
     ],
     errorElement: <PageNotFound />
