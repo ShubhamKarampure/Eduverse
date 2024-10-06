@@ -9,7 +9,7 @@ const Blog = () => {
   const [error, setError] = useState(null);
 
   const API_KEY = '3d3fa0dbfd4b4fbab62f850b4e845b5e'; // Replace with your NewsAPI key
-  const API_URL = 'https://newsapi.org/v2/everything?q=technology%20innovation&apiKey=';
+  const API_URL = 'https://newsapi.org/v2/everything?q=tech%20forum&apiKey=';
 
   useEffect(() => {
     const fetchArticles = async () => {
