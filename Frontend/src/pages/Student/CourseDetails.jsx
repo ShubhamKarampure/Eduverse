@@ -47,7 +47,7 @@ export default function CoursePage() {
   const [studentMarks, setStudentMarks] = useState([]);
   const [newAssignment, setNewAssignment] = useState({
     deadline: "",
-    course: "",
+    course: id,
     description: "",
     criteria: ["", "", ""],
   });
@@ -219,7 +219,7 @@ export default function CoursePage() {
     };
 
     try {
-      const response = await axios.post(`${hoast}/teacher/assignment`, assignmentData, {
+      const response = await axios.post(`${host}/teacher/assignment`, assignmentData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -236,11 +236,10 @@ export default function CoursePage() {
         setShowAssignmentForm(false);
         setNewAssignment({
           deadline: "",
-          course: "",
+          course: id,
           description: "",
           criteria: ["", "", ""],
         });
-        // Refresh the assignments list
         const fetchAssignments = async () => {
           try {
             const response = await axios.get(`${getAssignments}`, {
@@ -440,7 +439,7 @@ export default function CoursePage() {
                 />
               </FormControl>
 
-              <FormControl mb={4}>
+              {/* <FormControl mb={4}>
                 <FormLabel>Course</FormLabel>
                 <Select
                   name="course"
@@ -454,7 +453,7 @@ export default function CoursePage() {
                     </option>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl> */}
 
               <FormControl mb={4}>
                 <FormLabel>Description</FormLabel>
