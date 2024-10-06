@@ -323,14 +323,6 @@ export default function CoursePage() {
             <Badge colorScheme="gray">Online</Badge>
           </HStack>
         </VStack>
-        <Box position="relative" height={{ base: "200px", md: "300px" }}>
-          <Image
-            src={selectedCourse?.image?.url || "/placeholder.svg"}
-            alt={`${selectedCourse.name} Course Cover`}
-            objectFit="cover"
-            layout="fill"
-          />
-        </Box>
       </SimpleGrid>
       <Button color={"teal"} onClick={() => handleTakeQuiz(id)} m={5}>
         Take Quiz
