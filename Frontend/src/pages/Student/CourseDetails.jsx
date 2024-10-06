@@ -357,7 +357,7 @@ export default function CoursePage() {
       {user.role == 'Teacher' && <Button color={"teal"} onClick={() => handleGenerateQuiz()} m={5}>
         Generate Quiz
       </Button>}
-      {user.role == 'Teacher' && <Button color={"teal"} onClick={() => handleGenerateRoadmap()} m={5}>
+      {user.role == 'Teacher' && roadmaps.length === 0 && <Button color={"teal"} onClick={() => handleGenerateRoadmap()} m={5}>
         Generate Roadmap
       </Button>}
       {/* Conditionally render the "Take Quiz" button */}
@@ -551,7 +551,7 @@ export default function CoursePage() {
                 <Heading size="md">{item.title}</Heading>
               </HStack>
               <Text color="gray.600">{item.description}</Text>
-              <Button colorScheme="teal">Upload Content</Button>
+              {user.role === "Teacher" && <Button colorScheme="teal">Upload Content</Button>}
             </CardBody>
           </Card>
         ))}
@@ -566,7 +566,7 @@ export default function CoursePage() {
                 <Heading size="md">{item.title}</Heading>
               </HStack>
               <Text color="gray.600">{item.description}</Text>
-              <Button colorScheme="teal">Upload Content</Button>
+              {user.role === "Teacher" && <Button colorScheme="teal">Upload Content</Button>}
             </CardBody>
           </Card>
         ))}

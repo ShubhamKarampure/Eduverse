@@ -17,7 +17,7 @@ import {
 import { FaGraduationCap } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { getAssignments } from '../../APIRoutes';
+import { getAssignments, host } from '../../APIRoutes';
 
 export default function ProfilePage() {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -48,10 +48,15 @@ export default function ProfilePage() {
             });
             hasMounted.current = true; // Set the ref to true after initial mount
         }
-    }, [user]);
+    }, []);
 
     const handleFileChange = (e) => {
-        setSelectedFile(e.target.files[0]);
+        const file=e.target.files[0]
+        const reader=new FileReader()
+        reader.onload = () => {
+            setSelectedFile(file);
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleInputChange = (e) => {
@@ -64,17 +69,19 @@ export default function ProfilePage() {
 
     const handleProfileUpdate = async () => {
         const data = new FormData();
-        console.log(formData)
+        console.log(user);        
         data.append('name', formData.name);
         data.append('email', formData.email);
         data.append('username', formData.username);
         if (selectedFile) {
             data.append('image', selectedFile);
         }
-        console.log("data",data)
+        for (let [key, value] of data.entries()) {
+            console.log(key, value);
+        }
 
         try {
-            const response = await axios.patch(`/api/users/${user._id}`, data, {
+            const response = await axios.patch(`${host}/update/${user._id}`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -106,7 +113,7 @@ export default function ProfilePage() {
                     });
 
                     const results = await Promise.all(promises);
-                    console.log(results);
+                    
                 } catch (error) {
                     console.log(error);
                 }
@@ -114,7 +121,7 @@ export default function ProfilePage() {
         };
 
         fetchAssignments();
-    }, [courses]);
+    }, []);
 
     if (!user) {
         return <div>Loading...</div>;
