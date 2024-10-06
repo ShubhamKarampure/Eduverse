@@ -28,7 +28,7 @@ export default function ProfilePage() {
     const textColor = useColorModeValue('gray.600', 'gray.200');
 
     const handleViewCourses = () => {
-        navigate('/home/mycourses');
+        navigate(`${user.role==='Student'?"/home/mycourses":"/home/teacher"}`);
     };
     useEffect(()=>{
         const fetchAssignments = async () => {
