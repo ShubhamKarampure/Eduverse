@@ -89,7 +89,7 @@ export default function ProfilePage() {
     };
 
     const handleViewCourses = () => {
-        navigate('/home/mycourses');
+        navigate(`${user.role==='Student'?"/home/mycourses":"/home/teacher"}`);
     };
 
     useEffect(() => {

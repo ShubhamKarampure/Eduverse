@@ -26,6 +26,8 @@ coverage/
 #tempfiles folder
 .tempfiles
 
+_pycache_
+
 # Next.js build output
 .next/
 

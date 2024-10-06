@@ -391,6 +391,30 @@ export const getLeaderboard = async (req, res) => {
     }
 }
 
-
-
-
+export const createRoadmapController=async(req,res)=>{
+    try {
+        const courseId=req.params.id
+        const course=await CourseModel.findById(courseId)
+        const description=course.description
+        const response=await axios.post(`${process.env.FLASK_URL}/roadmap`,{description},{
+            headers:{
+                "Content-Type":"application/json"
+            },
+            withCredentials:true
+        })
+        console.log(response.data);        
+        course.roadmap=response.data.roadmap
+        course.save()
+        res.status(200).json({
+            success:true,
+            message:"Created roadmap successfully",
+            roadmap:course.roadmap
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+}
