@@ -220,5 +220,61 @@ def quiz_feedback():
 
     return jsonify({"feedback": feedback_list})  # Return the list of feedback responses
 
+@app.route('/roadmap', methods=['POST'])
+def roadmap():
+    data = request.get_json()
+
+    # Check if required fields are present
+    if not data or 'description' not in data:
+        return jsonify({"error": "Missing 'description' in the request."}), 400
+
+    text = data['description']
+    # Create a prompt with the criteria
+    prompt = f"""
+You are a tutor. Generate a roadmap for a course in a proper structure. 
+Following is the course description: {text} 
+Output the result in valid JSON format with double quotes around all keys and values. The JSON format should be an array named "roadmap" consisting of 10 objects, where each object contains a "title" and a "description."
+
+Example format (keep the name of keys the same and title as "roadmap"; don't change anything):
+{{
+  "roadmap": [
+    {{
+      "title": "Introduction to the Course",
+      "description": "Overview of the course objectives and structure."
+    }},
+    ...
+  ]
+}}
+
+Return a valid JSON output without any other lines of text.
+"""
+
+
+
+    # Create a completion request to grade the assignment
+    completion = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=1,
+        max_tokens=1024,
+        top_p=1,
+        stream=False,
+        response_format={"type": "json_object"},
+        stop=None,
+    )
+    message_content = completion.choices[0].message.content
+        
+        # If the content is in JSON format, parse it
+    try:
+        json_response = json.loads(message_content)  # Parse the string into a JSON object
+        return jsonify(json_response)  # Return the JSON response
+    except json.JSONDecodeError:
+        return jsonify({"error": "Response is not valid JSON."}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
