@@ -87,9 +87,9 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <ChakraProvider>
       <RouterProvider router={router} />
     </ChakraProvider>
-  </StrictMode>
+  /* </StrictMode> */
 );

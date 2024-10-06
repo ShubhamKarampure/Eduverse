@@ -44,15 +44,31 @@ const AssignmentCalendar = () => {
         return null;
     };
 
-    return (
-        <div className="flex flex-col items-center p-4">
-            <h1 className="text-2xl font-bold mb-4">Assignment Deadlines Calendar</h1>
-            <Calendar
-                tileClassName={tileClassName}
-                className="w-full max-w-2xl shadow-lg rounded-lg p-4"
-            />
-        </div>
-    );
-};
+  return (
+    <div className="deadline-calendar flex flex-col p-6">
+      <h2 className="text-lg font-bold mb-4">Deadlines</h2>
+      <Calendar
+        tileClassName={tileClassName}
+        className="rounded-lg border border-gray-300 shadow-md"
+      />
+      <div className="mt-4">
+        <h3 className="font-semibold">Selected Dates:</h3>
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : assignments.length > 0 ? (
+          <ul className="mt-2 list-disc list-inside">
+            {assignments.map((date, index) => (
+              <li key={index} className="text-gray-700">
+                {format(new Date(date), 'MM/dd/yyyy')}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500">No deadlines available.</p>
+        )}
+      </div>
+    </div>
+  );
+});
 
 export default AssignmentCalendar;
