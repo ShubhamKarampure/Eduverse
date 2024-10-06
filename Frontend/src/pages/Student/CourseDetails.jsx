@@ -20,6 +20,9 @@ import { CheckCircleIcon, TimeIcon } from '@chakra-ui/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { getAssignments, gradeAssignment, submitAssignment } from '../../APIRoutes/index.js';
+import { host } from '../../APIRoutes/index.js';
+import Histogram from '../../components/histogram.jsx';
+import BarGraph from '../../components/bargraph.jsx';
 
 export default function CoursePage() {
     const { id } = useParams();
@@ -101,6 +104,25 @@ export default function CoursePage() {
                     [aid]: response.data.evaluation
                 }));
             }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const [histo,setHisto]=useState(false)
+    const [studentMarks,setStudentMarks]=useState([])
+
+    const handleLeaderBoard=async()=>{
+        try {
+            const response=await axios.get(`${host}/course/${id}`,{
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                withCredentials:true
+            })
+            console.log(response.data);
+            setStudentMarks(response.data.leaderboard)
+            setHisto(true)
         } catch (error) {
             console.log(error);
         }
@@ -203,6 +225,14 @@ export default function CoursePage() {
                     </Card>
                 ))}
             </SimpleGrid>
+            {!histo?<Button colorScheme='teal' className='my-4' onClick={handleLeaderBoard}>
+                Check Leaderboard
+            </Button>:<Button colorScheme='teal' className='my-4' onClick={()=>{setHisto(false); setStudentMarks([]);}}>
+                Remove Leaderboard
+            </Button>}
+            {
+                histo && <BarGraph studentMarks={studentMarks}/>
+            }
         </Container>
     );
 }
