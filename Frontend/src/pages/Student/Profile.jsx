@@ -22,8 +22,7 @@ import { getAssignments } from '../../APIRoutes';
 export default function ProfilePage() {
     const user = JSON.parse(localStorage.getItem('user'));
     const courses = JSON.parse(localStorage.getItem('student-courses'));
-    console.log('Courses:', courses); // Debugging log
-
+    
     const [selectedFile, setSelectedFile] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
@@ -36,11 +35,10 @@ export default function ProfilePage() {
     const bgColor = useColorModeValue('white', 'gray.800');
     const textColor = useColorModeValue('gray.600', 'gray.200');
 
-    // Use a ref to check if component has mounted
+    const [courseAssignments, setCourseAssignments] = useState([]);
     const hasMounted = useRef(false);
 
     useEffect(() => {
-        // Set initial form data from user object only once
         if (user && !hasMounted.current) {
             setFormData({
                 name: user.name,
@@ -48,7 +46,7 @@ export default function ProfilePage() {
                 username: user.username,
                 image: user.image?.url || null,
             });
-            hasMounted.current = true; // Set the ref to true after initial mount
+            hasMounted.current = true;
         }
     }, [user]);
 
@@ -66,14 +64,12 @@ export default function ProfilePage() {
 
     const handleProfileUpdate = async () => {
         const data = new FormData();
-        console.log(formData)
         data.append('name', formData.name);
         data.append('email', formData.email);
         data.append('username', formData.username);
         if (selectedFile) {
             data.append('image', selectedFile);
         }
-        console.log("data",data)
 
         try {
             const response = await axios.patch(`/api/users/${user._id}`, data, {
@@ -83,7 +79,7 @@ export default function ProfilePage() {
             });
             alert(response.data.message);
             localStorage.setItem('user', JSON.stringify(response.data.user));
-            setIsEditing(false); // Close the editing mode
+            setIsEditing(false);
         } catch (error) {
             console.error(error);
             alert("An error occurred while updating the profile.");
@@ -96,31 +92,36 @@ export default function ProfilePage() {
 
     useEffect(() => {
         const fetchAssignments = async () => {
-            if (courses && courses.length > 0) {
-                try {
-                    const promises = courses.map(async (course) => {
-                        const response = await axios.get(`${getAssignments}`, {
-                            headers: {
-                                course: course._id,
-                            },
-                        });
-                        return response.data;
+            try {
+                const promises = courses?.map(async (course) => {
+                    const response = await axios.get(getAssignments, {
+                        headers: {
+                            course: course._id
+                        }
                     });
+                    const assignments = response.data.assignments || [];
 
-                    const results = await Promise.all(promises);
-                    console.log(results);
-                } catch (error) {
-                    console.log(error);
-                }
+                    const submittedCount = assignments?.filter(a => a.submissions.some(sub => sub.student === user._id)).length || 0;
+                    
+                    return {    
+                        courseId: course._id,
+                        courseName: course.name,
+                        totalAssignments: assignments.length,
+                        submittedAssignments: submittedCount,
+                    };
+                });
+
+                const results = await Promise.all(promises);
+                setCourseAssignments(results);
+            } catch (error) {
+                console.error('Error fetching assignments:', error);
             }
         };
 
-        fetchAssignments();
-    }, [courses]);
-
-    if (!user) {
-        return <div>Loading...</div>;
-    }
+        if (courses && courses.length > 0) {
+            fetchAssignments();
+        }
+    }, [courses, user._id]);
 
     return (
         <Container maxW="container.xl" py={8}>
@@ -128,23 +129,14 @@ export default function ProfilePage() {
                 <Box className="w-1/2 pr-4">
                     <Box bg={bgColor} p={6} rounded="lg" shadow="md" mb={6}>
                         <Flex alignItems="center" mb={4}>
-                            <Avatar 
-                                size="xl" 
-                                name={formData.name} 
-                                src={formData.image} 
-                                mr={4} 
-                            />
+                            <Avatar size="xl" name={formData.name} src={formData.image} mr={4} />
                             <Box>
                                 <Heading size="lg">{formData.name}</Heading>
                                 <Text color={textColor}>@{formData.username}</Text>
                             </Box>
                         </Flex>
 
-                        <Button 
-                            mt={4} 
-                            colorScheme="blue" 
-                            onClick={() => setIsEditing(!isEditing)} // Toggle editing mode
-                        >
+                        <Button mt={4} colorScheme="blue" onClick={() => setIsEditing(!isEditing)}>
                             {isEditing ? "Cancel" : "Edit Profile"}
                         </Button>
 
