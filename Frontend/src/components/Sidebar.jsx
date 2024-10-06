@@ -45,6 +45,7 @@ const Sidebar = () => {
                         open={open}
                     />
                 </Link>
+                
                 <Link to={user.role==='Student'?'/home':'/home/teacher-add-course'}>
                     <Option
                         Icon={MdAssignment}
@@ -84,7 +85,7 @@ const Sidebar = () => {
                         open={open}
                     />
                 </Link>
-                <Link to={user.role==='Student'?'/home/profile':'/home/teacherProfile'}>
+                <Link to={'/home/profile'}>
                     <Option
                         Icon={CgProfile}
                         title="Profile"
@@ -160,7 +161,7 @@ const TitleSection = ({ open }) => {
                             transition={{ delay: 0.125 }}
                         >
                             <span className="block text-xs font-semibold text-black">EduVerse</span>
-                            <span className="block text-xs text-black">Pro Plan</span>
+                           
                         </motion.div>
                     )}
                 </div>
@@ -192,6 +193,7 @@ const Logo = () => {
                 <path
                     d="M17.4224 27.102L11.4192 36H33.5008L49 13.0271H32.7024L23.2064 27.102H17.4224Z"
                     stopColor="#000000"
+                    
                 ></path>
             </svg>
         </motion.div>

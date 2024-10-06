@@ -18,6 +18,7 @@ import TeacherProfile from "./components/TeacherProfile.jsx";
 import LandingPage from "./pages/landingPage.jsx";
 import Blog from "./pages/Blog.jsx";
 import TeacherCourse from './components/TeacherCourse.jsx'
+import SignLanguageCourse from "./pages/SignLangugae/signLangCoursePage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,9 @@ const router = createBrowserRouter([
       },{
         path: '/home/teacher-add-course',
         element: <TeacherCourse/>
+      },{
+        path:'signLanguage',
+        element: <SignLanguageCourse/>
       }
     ],
     errorElement: <PageNotFound />

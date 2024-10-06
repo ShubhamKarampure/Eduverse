@@ -14,18 +14,15 @@ import {
   Icon,
   Button,
   Input,
-  useToast,
   Flex,
+  useToast,
 } from "@chakra-ui/react";
 import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import {
-  getAssignments,
-  submitAssignment,
-  gradeAssignment,
-  getAllCoursesByInstructor,
-} from "../../APIRoutes/index.js";
+import { getAssignments, submitAssignment } from "../../APIRoutes/index.js";
+import { host } from "../../APIRoutes/index.js";
+import BarGraph from "../../components/bargraph.jsx";
 
 export default function CoursePage() {
   const { id } = useParams();
@@ -40,8 +37,9 @@ export default function CoursePage() {
   const [assignments, setAssignments] = useState([]);
   const [file, setFile] = useState(null);
   const [grades, setGrades] = useState({});
-  const [hasSubmitted, setHasSubmitted] = useState({}); // Track submissions
-  const [isButtonDisabled, setButtonDisabled] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState({});
+  const [histo, setHisto] = useState(false);
+  const [studentMarks, setStudentMarks] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,15 +62,15 @@ export default function CoursePage() {
   }, [id]);
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]); // Save selected file
+    setFile(e.target.files[0]);
   };
 
   const handleFileUpload = async (assignmentId) => {
-    if (!file) return; // Prevent upload if no file is selected
+    if (!file) return;
 
     const formData = new FormData();
-    formData.append("submissionFile", file); // Append the file
-    formData.append("assignmentId", assignmentId); // Append the assignment ID
+    formData.append("submissionFile", file);
+    formData.append("assignmentId", assignmentId);
 
     try {
       const response = await axios.post(
@@ -92,90 +90,33 @@ export default function CoursePage() {
           duration: 5000,
           isClosable: true,
         });
-        setFile(null); // Clear file input
-        setHasSubmitted((prev) => ({ ...prev, [assignmentId]: true })); // Mark assignment as submitted
+        setFile(null);
+        setHasSubmitted((prev) => ({ ...prev, [assignmentId]: true }));
       }
     } catch (error) {
       console.log("Error uploading file:", error);
     }
   };
 
-  const handleGrade = async (assignmentId) => {
-    if (!hasSubmitted[assignmentId]) {
-      toast({
-        title: "No Submission",
-        description: "Please upload the assignment before checking the grade.",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-      });
-      return; // Prevent grading if no submission
-    }
+  const handleLeaderBoard = async () => {
     try {
-      const response = await axios.get(`${gradeAssignment}`, {
+      const response = await axios.get(`${host}/course/${id}`, {
         headers: {
-          studentid: `${user._id}`,
-          assignmentid: `${assignmentId}`,
+          "Content-Type": "application/json",
         },
+        withCredentials: true,
       });
-      if (response.data.success) {
-        setGrades((prev) => ({
-          ...prev,
-          [assignmentId]: response.data.evaluation,
-        }));
-      }
+      setStudentMarks(response.data.leaderboard);
+      setHisto(true);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleButton = (e, id) => {
-    e.preventDefault();
-    setButtonDisabled(true);
-    if (user.role === "Student") {
-      navigate(`/home/quiz/${id}`);
-    } else {
-      handleGenerateQuiz(id);
-    }
-    setButtonDisabled(false);
-  };
-
-  const handleGenerateQuiz = (id) => {
-    axios
-      .get(`${getAllCoursesByInstructor}/${id}`)
-      .then(() => {
-        toast({
-          title: "Quiz Generated",
-          description: "You have successfully generated a quiz.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        toast({
-          title: "Error",
-          description: "An error occurred while generating quiz.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      });
-  };
-
-  if (!selectedCourse) {
-    return (
-      <Container maxW="container.xl" py={8}>
-        <Heading>Course not found</Heading>
-      </Container>
-    );
-  }
-
   return (
     <Container maxW="container.xl" py={8}>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
-        <VStack align="start" spacing={4}>
+        <VStack align="start" justify="center" spacing={4}>
           <Heading as="h1" size="2xl">
             {selectedCourse.name}
           </Heading>
@@ -190,50 +131,50 @@ export default function CoursePage() {
         <Box position="relative" height={{ base: "200px", md: "300px" }}>
           <Image
             src={selectedCourse?.image?.url || "/placeholder.svg"}
-            alt={`${selectedCourse.name} Cover`}
+            alt={`${selectedCourse.name} Course Cover`}
             objectFit="cover"
+            layout="fill"
           />
         </Box>
       </SimpleGrid>
-
-      <Button
-        my={6}
-        colorScheme="teal"
-        onClick={(e) => handleButton(e, id)}
-        disabled={isButtonDisabled}
-      >
-        {user.role === "Student" ? "Take Quiz" : "Generate Quiz"}
+      <Button color={"teal"} onClick={() => handleTakeQuiz(id)}>
+        Take Quiz
       </Button>
-      {user.role === "Teacher" && (
-        <Button mx={6} colorScheme="teal" onClick={() => navigate(`/home/quiz/${id}`)}>
-          View Quiz
+      {/* Conditionally render the "Take Quiz" button */}
+      {selectedCourse.name === "Sign Language" && (
+        <Button color={"teal"} onClick={() => navigate('/home/signLanguage')} m={5}>
+          Learn
         </Button>
       )}
 
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-        {assignments.map((assignment, index) => (
-          <Card key={index} display="flex" flexDirection="column">
+        {assignments.map((item, index) => (
+          <Card key={index} display="flex" flexDirection="column" height="100%">
             <CardBody display="flex" flexDirection="column" flexGrow={1}>
               <HStack mb={2}>
                 <Icon as={TimeIcon} color="red.500" />
-                <Heading size="md">{assignment.description}</Heading>
+                <Heading size="md">{item.description}</Heading>
               </HStack>
-              <HStack>
-                {assignment.criteria.map((criterion, i) => (
-                  <Badge key={i} colorScheme="gray">
-                    {criterion}
+              <HStack className="flex flex-wrap">
+                {item.criteria.map((c, index) => (
+                  <Badge colorScheme="gray" key={index}>
+                    {c}
                   </Badge>
                 ))}
               </HStack>
-              <Text>Deadline: {assignment.deadline.slice(0, 10)}</Text>
-              <Box flexGrow={1}></Box>
+              <Text fontWeight="semibold">
+                Deadline: {item.deadline.toString().slice(0, 10)}
+              </Text>
+
               <Button
                 as="label"
                 htmlFor={`file-input-${index}`}
                 colorScheme="teal"
                 width="100%"
+                mt="auto"
                 size="lg"
-                onClick={() => handleFileUpload(assignment._id)}
+                onClick={() => handleFileUpload(item._id)}
+                cursor="pointer"
               >
                 Upload Assignment
                 <Input
@@ -244,27 +185,10 @@ export default function CoursePage() {
                   onChange={handleFileChange}
                 />
               </Button>
-              <Button
-                colorScheme="teal"
-                my={4}
-                onClick={() => handleGrade(assignment._id)}
-              >
+
+              <Button colorScheme="teal" className="my-4">
                 See Grade
               </Button>
-              {hasSubmitted[assignment._id] && grades[assignment._id] ? (
-                <Flex direction="column">
-                  <Text fontWeight="bold">Grade: {grades[assignment._id].grade}</Text>
-                  {Object.entries(grades[assignment._id])
-                    .filter(([key]) => key !== "grade")
-                    .map(([key, value]) => (
-                      <Text key={key}>
-                        <strong>{key}:</strong> {value}
-                      </Text>
-                    ))}
-                </Flex>
-              ) : (
-                <Text color="gray.500">Assignment not submitted yet.</Text>
-              )}
             </CardBody>
           </Card>
         ))}
@@ -273,6 +197,7 @@ export default function CoursePage() {
       <Heading as="h2" size="xl" mt={12} mb={6}>
         Course Roadmap
       </Heading>
+
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
         {roadmapItems.map((item, index) => (
           <Card key={index}>
@@ -286,6 +211,25 @@ export default function CoursePage() {
           </Card>
         ))}
       </SimpleGrid>
+
+      {!histo ? (
+        <Button colorScheme="teal" className="my-4" onClick={handleLeaderBoard}>
+          Check Leaderboard
+        </Button>
+      ) : (
+        <Button
+          colorScheme="teal"
+          className="my-4"
+          onClick={() => {
+            setHisto(false);
+            setStudentMarks([]);
+          }}
+        >
+          Remove Leaderboard
+        </Button>
+      )}
+
+      {histo && <BarGraph studentMarks={studentMarks} />}
     </Container>
   );
 }
@@ -293,7 +237,8 @@ export default function CoursePage() {
 const roadmapItems = [
   {
     title: "Introduction to ML Concepts",
-    description: "Learn the fundamental concepts and terminology of Machine Learning.",
+    description:
+      "Learn the fundamental concepts and terminology of Machine Learning.",
   },
   {
     title: "Data Preprocessing",
@@ -301,6 +246,7 @@ const roadmapItems = [
   },
   {
     title: "Model Selection",
-    description: "Learn about different types of ML models and when to use them.",
+    description:
+      "Learn about different types of ML models and when to use them.",
   },
 ];

@@ -53,7 +53,7 @@ export default function ProfilePage() {
             }
         };
 
-        if (courses && courses.length > 0) {
+        if (courses && courses?.length > 0) {
             fetchAssignments();
         }
     },[])
@@ -83,7 +83,7 @@ export default function ProfilePage() {
                         <Text color={textColor} mb={4}>Your achievements and progress</Text>
                         <Flex justify="space-between" wrap>
                             <Stat>
-                                <StatNumber>{courses.length}</StatNumber>
+                                <StatNumber>{courses?.length}</StatNumber>
                                 <StatLabel>Courses in Progress</StatLabel>
                             </Stat>
                             <Stat>
@@ -104,7 +104,7 @@ export default function ProfilePage() {
                         <Heading size="md" mb={4}>Courses Joined</Heading>
                         <Text color={textColor} mb={4}>Your learning journey</Text>
                         <VStack spacing={4} align="stretch">
-                            {courses.map((course) => (
+                            {courses?.map((course) => (
                                 <Box key={course.id}>
                                     <Flex justify="space-between" mb={2}>
                                         <Text fontWeight="semibold">{course.name}</Text>

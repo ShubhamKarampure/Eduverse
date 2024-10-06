@@ -50,12 +50,12 @@ const DeadlineCalendar = memo(() => {
     const classes = ['react-calendar__tile'];
 
     if (date.toDateString() === new Date().toDateString()) {
-      console.log(date.toDateString());
       
       classes.push('today');
     }
 
     if (assignments.some((assignment) => new Date(assignment).toDateString() === date.toDateString())) {
+      console.log(assignments.toDateString());
       classes.push('assignment-date');
     }
 
