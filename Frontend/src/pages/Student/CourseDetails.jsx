@@ -325,8 +325,11 @@ export default function CoursePage() {
         </VStack>
       </SimpleGrid>
       <Button color={"teal"} onClick={() => handleTakeQuiz(id)} m={5}>
-        Take Quiz
+        {user.role=='Teacher'?`Take Quiz`:'View Quiz'}
       </Button>
+      {user.role=='Teacher' && <Button color={"teal"} onClick={() => handleGenerateQuiz()} m={5}>
+        Generate Quiz
+      </Button>}
       {/* Conditionally render the "Take Quiz" button */}
       {selectedCourse.name === "Sign Language" && (
         <Button
