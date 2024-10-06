@@ -20,7 +20,7 @@ import {
 import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { getAssignments,gradeAssignment, submitAssignment } from "../../APIRoutes/index.js";
+import { getAssignments, gradeAssignment, submitAssignment } from "../../APIRoutes/index.js";
 import { host } from "../../APIRoutes/index.js";
 import BarGraph from "../../components/bargraph.jsx";
 
@@ -107,7 +107,7 @@ export default function CoursePage() {
         withCredentials: true,
       });
       console.log(response.data);
-      
+
       setStudentMarks(response.data.leaderboard);
       setHisto(true);
     } catch (error) {
@@ -140,12 +140,12 @@ export default function CoursePage() {
   };
   return (
     <Container maxW="container.xl" py={8}>
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
-        <VStack align="start" justify="center" spacing={4}>
+      <Box mb={8}>
+        <VStack align="start" spacing={4}>
           <Heading as="h1" size="2xl">
             {selectedCourse.name}
           </Heading>
-          <Text fontSize="xl" color="gray.600">
+          <Text fontSize="xl" color="gray.600" w="full">
             {truncateText(selectedCourse.description, 400)}
           </Text>
           <HStack>
@@ -153,15 +153,7 @@ export default function CoursePage() {
             <Badge colorScheme="gray">Online</Badge>
           </HStack>
         </VStack>
-        <Box position="relative" height={{ base: "200px", md: "300px" }}>
-          <Image
-            src={selectedCourse?.image?.url || "/placeholder.svg"}
-            alt={`${selectedCourse.name} Course Cover`}
-            objectFit="cover"
-            layout="fill"
-          />
-        </Box>
-      </SimpleGrid>
+      </Box>
       <Button color={"teal"} onClick={() => handleTakeQuiz(id)} m={5}>
         Take Quiz
       </Button>
@@ -169,7 +161,7 @@ export default function CoursePage() {
       {selectedCourse.name === "Sign Language" && (
         <Button
           color={"teal"}
-          onClick={() => navigate("/home/signLanguage")}
+          onClick={() => window.open("http://localhost:8501/", "_blank")}
           m={5}
         >
           Learn
@@ -284,17 +276,54 @@ export default function CoursePage() {
 
 const roadmapItems = [
   {
-    title: "Introduction to ML Concepts",
+    title: "Introduction to Communication",
     description:
-      "Learn the fundamental concepts and terminology of Machine Learning.",
+      "Understand the basics of communication, its components, and the different forms it takes in personal and professional settings.",
   },
   {
-    title: "Data Preprocessing",
-    description: "Understand how to prepare and clean data for model training.",
+    title: "Verbal Communication",
+    description:
+      "Learn how to articulate ideas clearly, improve speaking skills, and engage in effective conversations through active listening and proper tone.",
   },
   {
-    title: "Model Selection",
+    title: "Non-Verbal Communication",
     description:
-      "Learn about different types of ML models and when to use them.",
+      "Understand body language, facial expressions, gestures, and how non-verbal cues impact communication.",
+  },
+  {
+    title: "Public Speaking",
+    description:
+      "Learn techniques to speak confidently in front of an audience, structure presentations, and handle public speaking anxiety.",
+  },
+  {
+    title: "Interpersonal Communication",
+    description:
+      "Explore communication strategies for one-on-one and group interactions, including conflict resolution and relationship building.",
+  },
+  {
+    title: "Written Communication",
+    description:
+      "Improve writing skills for different contexts, including professional emails, reports, and other forms of business communication.",
+  },
+  {
+    title: "Persuasion and Influence",
+    description:
+      "Learn how to craft compelling messages, use storytelling, and apply persuasion techniques to influence and motivate others.",
+  },
+  {
+    title: "Cross-Cultural Communication",
+    description:
+      "Understand the challenges of communicating across cultures, and learn strategies for effective communication in diverse environments.",
+  },
+  {
+    title: "Communication in the Digital Age",
+    description:
+      "Explore the impact of technology on communication, including best practices for virtual meetings, social media communication, and remote work.",
+  },
+  {
+    title: "Feedback and Active Listening",
+    description:
+      "Learn how to give and receive constructive feedback and improve listening skills to enhance mutual understanding in conversations.",
   },
 ];
+
