@@ -48,8 +48,8 @@ export default function TeacherCourse() {
       axios.get(getAllCoursesByInstructor, {
         headers: { instructorid: user._id },
       })
-      .then((res) => setCourses(res.data))
-      .catch((e) => console.log(e));
+        .then((res) => setCourses(res.data))
+        .catch((e) => console.log(e));
     }
   }, [cour, user._id]);
 
@@ -86,11 +86,20 @@ export default function TeacherCourse() {
   };
 
   const handleUpdateCourse = () => {
-    axios.patch(`${getAllCoursesByInstructor}/${editingCourseId}`, obj) // Use the correct endpoint
+    axios.patch(`${getAllCoursesByInstructor}/${editingCourseId}`, obj)
       .then((res) => {
-        setCourses((prevCourses) => prevCourses.map(course => course._id === editingCourseId ? res.data : course)); // Use _id for comparison
+        // Make sure the response includes the full course object
+        const updatedCourse = res.data.updatedCourse;
+
+        setCourses((prevCourses) =>
+          prevCourses.map((course) =>
+            course._id === editingCourseId ? updatedCourse : course
+          )
+        );
+
         resetForm();
         setIsModalOpen(false);
+
         toast({
           title: "Course Updated",
           description: "Your course has been updated successfully.",
@@ -110,6 +119,7 @@ export default function TeacherCourse() {
         });
       });
   };
+
 
   const resetForm = () => {
     setEditingCourseId(null);
