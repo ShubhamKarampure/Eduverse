@@ -1,7 +1,6 @@
 import React, { useEffect, useState, memo } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import './calendarStyles.css';
 import axios from 'axios';
 import { format } from 'date-fns';
 
@@ -34,7 +33,6 @@ const DeadlineCalendar = memo(() => {
           );
 
           setAssignments([...new Set(fetchedAssignments)]);
-          
         }
       } catch (error) {
         setError('Error fetching assignments: ' + error.message);
@@ -42,18 +40,20 @@ const DeadlineCalendar = memo(() => {
     };
 
     fetchAssignments();
-  }, []);
+  }, [user]);
 
   const tileClassName = ({ date, view }) => {
     if (view !== 'day') return null;
 
-    const classes = ['react-calendar__tile'];
+    const classes = ['react-calendar__tile', 'relative flex items-center justify-center'];
 
+    // Check if the date is today
     if (date.toDateString() === new Date().toDateString()) {
-      
+
       classes.push('today');
     }
 
+    // Check if the date matches any assignment deadline
     if (assignments.some((assignment) => new Date(assignment).toDateString() === date.toDateString())) {
       console.log(assignments.toDateString());
       classes.push('assignment-date');
