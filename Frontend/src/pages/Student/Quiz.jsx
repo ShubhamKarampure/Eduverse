@@ -1,8 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { quizRoute, submitQuiz } from "../../APIRoutes/index.js";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
+import { host } from "../../APIRoutes/index.js";
 
 const Quiz = () => {
   const [quizData, setQuizData] = useState([]);
@@ -31,6 +32,8 @@ const Quiz = () => {
     };
     fetchQuiz();
   }, []);
+
+  console.log(quizData);  
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -114,6 +117,8 @@ const Quiz = () => {
     setScore(0); // Reset score
   };
 
+  const navigate=useNavigate()
+
   return (
     <>
       {loading ? (
@@ -137,7 +142,7 @@ const Quiz = () => {
                   </h3>
                 </div>
 
-                {quizData.map((question, index) => (
+                {quizData.map((question, index,answer) => (
                   <div key={index} className="mb-6">
                     <h3 className="text-lg font-semibold">
                       Q{index + 1}. {question.question}
@@ -209,20 +214,29 @@ const Quiz = () => {
                     </button>
 
                     {currentQuestion === quizData.length - 1 ? (
-                      <button
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                        onClick={handleSubmit}
-                      >
-                        Submit
-                      </button>
-                    ) : (
-                      <button
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                        onClick={handleNext}
-                      >
-                        Next
-                      </button>
-                    )}
+                        user.role === 'Student' ? (
+                          <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            onClick={handleSubmit}
+                          >
+                            Submit
+                          </button>
+                        ) : (
+                          <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            onClick={()=>{navigate(`/home/course-details/${id}`)}}
+                          >
+                            Return to course
+                          </button>
+                        )
+                      ) : (
+                        <button
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                          onClick={handleNext}
+                        >
+                          Next
+                        </button>
+                      )}
                   </div>
                 </>
               )
