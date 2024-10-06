@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Container,
@@ -15,7 +15,7 @@ import {
     StatNumber,
     useColorModeValue
 } from '@chakra-ui/react';
-import { FaUser, FaBook, FaGraduationCap } from 'react-icons/fa';
+import { FaUser, FaGraduationCap } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { getAssignments } from '../../APIRoutes';
@@ -23,40 +23,58 @@ import { getAssignments } from '../../APIRoutes';
 export default function ProfilePage() {
     const user = JSON.parse(localStorage.getItem('user'));
     const courses = JSON.parse(localStorage.getItem('student-courses'));
+    console.log('Courses:', courses); // Debugging log
+
     const navigate = useNavigate();
     const bgColor = useColorModeValue('white', 'gray.800');
     const textColor = useColorModeValue('gray.600', 'gray.200');
 
+    // State to store assignment data
+    const [courseAssignments, setCourseAssignments] = useState([]);
+
     const handleViewCourses = () => {
-        navigate(`${user.role==='Student'?"/home/mycourses":"/home/teacher"}`);
+        navigate(`${user.role === 'Student' ? "/home/mycourses" : "/home/teacher"}`);
     };
-    useEffect(()=>{
+
+    useEffect(() => {
         const fetchAssignments = async () => {
             try {
                 const promises = courses.map(async (course) => {
-                    console.log(course._id);
+                    console.log(`Fetching assignments for course: ${course.name} (${course._id})`);
                     
-                    const response = await axios.get(`${getAssignments}`,{
-                        headers:{
-                            course:course._id
+                    const response = await axios.get(getAssignments, {
+                        headers: {
+                            course: course._id
                         }
-                    }); // Adjust the endpoint accordingly
-                    console.log(response.data);
-                    return response.data; // Return the fetched assignments
+                    });
+                    const assignments = response.data;
+                    console.log(`Assignments for ${course.name}:`, assignments);
+
+                    // Filter submitted assignments
+                    const submittedCount = assignments.filter(a => a.isSubmitted).length;
+
+                    return {
+                        courseId: course._id,
+                        courseName: course.name,
+                        totalAssignments: assignments.length,
+                        submittedAssignments: submittedCount,
+                    };
                 });
 
                 // Wait for all promises to resolve
                 const results = await Promise.all(promises);
-                console.log(results); // Log all fetched assignments
+                setCourseAssignments(results); // Store assignment data
+                console.log('All course assignments:', results); // Debugging log
             } catch (error) {
-                console.log(error);
+                console.error('Error fetching assignments:', error);
             }
         };
 
-        if (courses && courses?.length > 0) {
+        if (courses && courses.length > 0) {
             fetchAssignments();
         }
-    },[])
+    }, []);
+
     return (
         <Container maxW="container.xl" py={8}>
             <Flex>
@@ -104,13 +122,17 @@ export default function ProfilePage() {
                         <Heading size="md" mb={4}>Courses Joined</Heading>
                         <Text color={textColor} mb={4}>Your learning journey</Text>
                         <VStack spacing={4} align="stretch">
-                            {courses?.map((course) => (
-                                <Box key={course.id}>
+                            {courseAssignments.map((courseData) => (
+                                <Box key={courseData.courseId}>
                                     <Flex justify="space-between" mb={2}>
-                                        <Text fontWeight="semibold">{course.name}</Text>
-                                        <Badge>4/25 lessons</Badge>
+                                        <Text fontWeight="semibold">{courseData.courseName}</Text>
+                                        <Badge>{`${courseData.submittedAssignments}/${courseData.totalAssignments} assignments`}</Badge>
                                     </Flex>
-                                    <Progress value="45" size="sm" colorScheme="blue" />
+                                    <Progress
+                                        value={(courseData.submittedAssignments / courseData.totalAssignments) * 100}
+                                        size="sm"
+                                        colorScheme="blue"
+                                    />
                                 </Box>
                             ))}
                         </VStack>
