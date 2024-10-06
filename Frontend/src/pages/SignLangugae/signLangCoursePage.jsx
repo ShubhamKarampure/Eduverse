@@ -16,6 +16,8 @@ import {
   useColorModeValue
 } from '@chakra-ui/react'
 import { FaCamera, FaPlay, FaPause } from 'react-icons/fa'
+import { flaskApi } from '../../APIRoutes'
+import axios from 'axios'
 
 export default function SignLanguageCourse() {
   const [isCameraOn, setIsCameraOn] = useState(false)
@@ -30,19 +32,26 @@ export default function SignLanguageCourse() {
   const textColor = useColorModeValue('blue.800', 'white')
   const accentColor = useColorModeValue('blue.600', 'blue.200')
 
+  const [img,setImg]=useState()
+
   useEffect(() => {
-    if (isCameraOn) {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-          if (webcamRef.current) {
-            webcamRef.current.srcObject = stream
-          }
-        })
-        .catch(err => console.error("Error accessing the camera:", err))
-    } else {
-      const stream = webcamRef.current?.srcObject
-      stream?.getTracks().forEach(track => track.stop())
+    const getFeed= async()=>{
+      try{
+          const response=await axios.get(flaskApi+'/video_feed',{ withCredentials: true },{
+            headers:{
+                "Content-Type":"application/json",
+            },
+            withCredentials:true
+          })
+          console.log(response.data);
+          setImg(response.data);
+
+      }catch(e){
+        console.log(e)
+      }
+      
     }
+    getFeed()
   }, [isCameraOn])
 
   useEffect(() => {
@@ -109,21 +118,7 @@ export default function SignLanguageCourse() {
               <Text color={accentColor}>Use your webcam to practice</Text>
               <AspectRatio ratio={16/9} bg="blue.100">
                 <Box>
-                  {isCameraOn ? (
-                    <video 
-                      ref={webcamRef}
-                      autoPlay 
-                      playsInline 
-                      muted
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      aria-label="Your webcam feed"
-                    />
-                  ) : (
-                    <Flex width="100%" height="100%" alignItems="center" justifyContent="center">
-                      <Text color={textColor}>Camera is off</Text>
-                    </Flex>
-                  )}
-                  <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} />
+                  {}
                 </Box>
               </AspectRatio>
               <Button 

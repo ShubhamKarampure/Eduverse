@@ -1,34 +1,36 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { quizRoute } from "../../APIRoutes";
-import { useNavigate, useParams } from "react-router-dom";
+import { quizRoute, submitQuiz } from "../../APIRoutes/index.js";
+import { useParams } from "react-router-dom";
+import { useToast } from "@chakra-ui/react";
 
 const Quiz = () => {
   const [quizData, setQuizData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [score, setScore] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
+  const [feedback, setFeedback] = useState([]);
+  const [showReview, setShowReview] = useState(false);
+  const toast = useToast();
   const user = JSON.parse(localStorage.getItem("user"));
   const { id } = useParams();
-  const navigate = useNavigate();
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        setLoading(true);
         const response = await axios.get(`${quizRoute}/${id}`, {
           withCredentials: true,
         });
         if (response.data.success) {
           setQuizData(response.data.course.quiz);
-          setLoading(false);
         }
       } catch (error) {
         console.log(error);
       }
     };
     fetchQuiz();
-  }, [id]);
+  }, []);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -39,6 +41,7 @@ const Quiz = () => {
       user_answer: option,
     };
     setUserAnswers(updatedAnswers);
+    console.log(userAnswers);
   };
 
   const handleNext = () => {
@@ -67,14 +70,48 @@ const Quiz = () => {
 
   const handleSubmit = async () => {
     const marks = calculateMarks();
+    setScore(marks); // Update score state
     const submissionData = {
-      course: id,
+      course: `${id}`,
       student: user._id,
       marks,
       questions: userAnswers,
     };
     console.log(submissionData);
-    // Submit logic here, if needed.
+    try {
+      const response = await axios.post(`${submitQuiz}`, submissionData, {
+        withCredentials: true,
+      });
+      if (response.data.success) {
+        setFeedback(response.data.evaluation.evaluation);
+        setShowReview(true); // Show the review after submission
+        toast({
+          title: "Success",
+          description: "Quiz submitted successfully",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting quiz:", error);
+      toast({
+        title: "Error",
+        description: "Please try again",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const retakeQuiz = () => {
+    setCurrentQuestion(0); // Reset to the first question
+    setUserAnswers([]); // Clear user's answers
+    setSelectedOption(null); // Clear selected option
+    setShowReview(false); // Hide the review and show the quiz again
+    setFeedback([]); // Clear feedback
+    setScore(0); // Reset score
   };
 
   return (
@@ -85,82 +122,110 @@ const Quiz = () => {
         </p>
       ) : (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-          <div className="w-full max-w-lg bg-white rounded-lg shadow-lg p-6">
-            {quizData.length > 0 && (
+          <div className="w-full max-w-[80%] bg-white rounded-lg shadow-lg p-6">
+            {showReview ? (
               <>
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                    {`Q${currentQuestion + 1}. ${
-                      quizData[currentQuestion].question
-                    }`}
-                  </h2>
+                {/* Quiz Review Section */}
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                  Quiz Review
+                </h2>
+
+                {/* Display the score */}
+                <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                  <h3 className="text-xl font-semibold">
+                    Your Score: {score}/{quizData.length * 2}
+                  </h3>
                 </div>
 
-                <div className="space-y-4">
-                  {Object.keys(quizData[currentQuestion].options).map((key) => {
-                    const isCorrect = quizData[currentQuestion].answer === key;
-                    return (
-                      <div
-                        key={key}
-                        className={`p-4 border rounded-lg cursor-pointer transition-colors 
-                                                ${
-                                                  selectedOption === key
-                                                    ? "bg-blue-500 text-white"
-                                                    : "bg-gray-200 hover:bg-gray-300"
-                                                } 
-                                                ${
-                                                  user.role === "Teacher" &&
-                                                  isCorrect
-                                                    ? "border-green-500 bg-green-200"
-                                                    : ""
-                                                }`}
-                        onClick={() => handleOptionClick(key)}
-                      >
-                        {quizData[currentQuestion].options[key]}
-                      </div>
-                    );
-                  })}
-                </div>
+                {quizData.map((question, index) => (
+                  <div key={index} className="mb-6">
+                    <h3 className="text-lg font-semibold">
+                      Q{index + 1}. {question.question}
+                    </h3>
+                    <p className="mt-2">
+                      <strong>Your Answer:</strong>{" "}
+                      {question.options[userAnswers[index]?.user_answer]}
+                    </p>
+                    <p>
+                      <strong>Correct Answer:</strong>{" "}
+                      {question.options[question.answer]}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-2">
+                      <strong>Feedback:</strong> {feedback[index]?.feedback}
+                    </p>
+                  </div>
+                ))}
 
-                <div className="mt-6 flex justify-between">
+                {/* Retake Quiz Button */}
+                <div className="flex justify-center mt-8">
                   <button
-                    className={`px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 ${
-                      currentQuestion === 0
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    onClick={handlePrevious}
-                    disabled={currentQuestion === 0}
+                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    onClick={retakeQuiz}
                   >
-                    Previous
+                    Retake Quiz
                   </button>
+                </div>
+              </>
+            ) : (
+              quizData.length > 0 && (
+                <>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                      {`Q${currentQuestion + 1}. ${
+                        quizData[currentQuestion].question
+                      }`}
+                    </h2>
+                  </div>
 
-                  {currentQuestion === quizData.length - 1 ? (
-                    user.role === "Teacher" ? (
-                      <button
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                        onClick={() => navigate(`/home/course-details/${id}`)}
-                      >
-                        Go to Courses
-                      </button>
-                    ) : (
+                  <div className="space-y-4">
+                    {Object.keys(quizData[currentQuestion].options).map(
+                      (key) => (
+                        <div
+                          key={key}
+                          className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                            selectedOption === key
+                              ? "bg-blue-500 text-white"
+                              : "bg-gray-200 hover:bg-gray-300"
+                          }`}
+                          onClick={() => handleOptionClick(key)}
+                        >
+                          {quizData[currentQuestion].options[key]}
+                        </div>
+                      )
+                    )}
+                  </div>
+
+                  <div className="mt-6 flex justify-between">
+                    <button
+                      className={`px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 ${
+                        currentQuestion === 0
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                      onClick={handlePrevious}
+                      disabled={currentQuestion === 0}
+                    >
+                      Previous
+                    </button>
+
+                    {currentQuestion === quizData.length - 1 ? (
                       <button
                         className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                         onClick={handleSubmit}
                       >
                         Submit
                       </button>
-                    )
-                  ) : (
-                    <button
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                      onClick={handleNext}
-                    >
-                      Next
-                    </button>
-                  )}
-                </div>
-              </>
+                    ) : (
+                      <button
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        onClick={handleNext}
+                      >
+                        Next
+                      </button>
+                    )}
+                  </div>
+                </>
+              )
             )}
           </div>
         </div>

@@ -1,10 +1,8 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
 const Histogram = ({ studentMarks }) => {
   // Create bins for the histogram
   const marks = studentMarks.map(student => student.marks); // Extract marks from student data
@@ -18,7 +16,6 @@ const Histogram = ({ studentMarks }) => {
     const binIndex = Math.floor(mark / binSize);
     bins[binIndex]++;
   });
-
   // Define data for Chart.js
   const data = {
     labels: bins.map((_, index) => `${index * binSize}-${(index + 1) * binSize}`), // Bin labels (e.g., 0-10, 11-20)
@@ -32,7 +29,6 @@ const Histogram = ({ studentMarks }) => {
       },
     ],
   };
-
   // Define options for Chart.js
   const options = {
     responsive: true,
@@ -61,8 +57,6 @@ const Histogram = ({ studentMarks }) => {
       },
     },
   };
-
   return <Bar data={data} options={options} />;
 };
-
 export default Histogram;

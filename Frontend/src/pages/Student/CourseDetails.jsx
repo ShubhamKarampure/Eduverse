@@ -20,7 +20,7 @@ import {
 import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { getAssignments, submitAssignment } from "../../APIRoutes/index.js";
+import { getAssignments,gradeAssignment, submitAssignment } from "../../APIRoutes/index.js";
 import { host } from "../../APIRoutes/index.js";
 import BarGraph from "../../components/bargraph.jsx";
 
@@ -106,15 +106,38 @@ export default function CoursePage() {
         },
         withCredentials: true,
       });
+      console.log(response.data);
+      
       setStudentMarks(response.data.leaderboard);
       setHisto(true);
     } catch (error) {
       console.log(error);
     }
   };
-  const handleTakeQuiz=((id)=>{
-    navigate(`/home/quiz/${id}`)
-  })
+  const handleTakeQuiz = (id) => {
+    navigate(`/home/quiz/${id}`);
+  };
+  const truncateText = (text, maxLength) => {
+    return text?.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+  const handleGrade = async (aid) => {
+    try {
+      const response = await axios.get(`${gradeAssignment}`, {
+        headers: {
+          studentId: `${user._id}`,
+          assignmentId: `${aid}`,
+        },
+      });
+      if (response.data.success) {
+        setGrades((prev) => ({
+          ...prev,
+          [aid]: response.data.evaluation,
+        }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Container maxW="container.xl" py={8}>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
@@ -123,7 +146,7 @@ export default function CoursePage() {
             {selectedCourse.name}
           </Heading>
           <Text fontSize="xl" color="gray.600">
-            {selectedCourse.description}
+            {truncateText(selectedCourse.description, 400)}
           </Text>
           <HStack>
             <Badge colorScheme="gray">12 weeks</Badge>
@@ -139,12 +162,16 @@ export default function CoursePage() {
           />
         </Box>
       </SimpleGrid>
-      <Button color={"teal"} onClick={() => handleTakeQuiz(id)}>
+      <Button color={"teal"} onClick={() => handleTakeQuiz(id)} m={5}>
         Take Quiz
       </Button>
       {/* Conditionally render the "Take Quiz" button */}
       {selectedCourse.name === "Sign Language" && (
-        <Button color={"teal"} onClick={() => navigate('/home/signLanguage')} m={5}>
+        <Button
+          color={"teal"}
+          onClick={() => navigate("/home/signLanguage")}
+          m={5}
+        >
           Learn
         </Button>
       )}
@@ -188,9 +215,28 @@ export default function CoursePage() {
                 />
               </Button>
 
-              <Button colorScheme="teal" className="my-4">
+              <Button
+                colorScheme="teal"
+                className="my-4"
+                onClick={() => handleGrade(item._id)}
+              >
                 See Grade
               </Button>
+              {grades[item._id] && (
+                <Flex className="flex-col">
+                  <Text fontWeight="bold" fontSize="lg">
+                    Grade: {grades[item._id].grade}
+                  </Text>
+                  {Object.entries(grades[item._id])
+                    .filter(([key]) => key !== "grade")
+                    .map(([key, value]) => (
+                      <Text key={key}>
+                        <span style={{ fontWeight: "bold" }}>{key}:</span>{" "}
+                        {value}
+                      </Text>
+                    ))}
+                </Flex>
+              )}
             </CardBody>
           </Card>
         ))}

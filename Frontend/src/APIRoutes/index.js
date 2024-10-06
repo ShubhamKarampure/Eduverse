@@ -10,3 +10,5 @@ export const getAssignments = `${host}/assignments`
 export const submitAssignment = `${host}/student/assignment`
 export const submitQuiz = `${host}/student/quiz`
 export const gradeAssignment = `${host}/teacher/assignment`
+
+export const flaskApi='http://localhost:5000'
