@@ -134,7 +134,7 @@ const Option = ({ Icon, title, selected, setSelected, open, notifs }) => {
         </motion.span>
       )}
 
-      {notifs && open && (
+      {false && open && (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
           animate={{
