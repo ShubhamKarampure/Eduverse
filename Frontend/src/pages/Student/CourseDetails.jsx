@@ -112,7 +112,9 @@ export default function CoursePage() {
       console.log(error);
     }
   };
-
+  const handleTakeQuiz=((id)=>{
+    navigate(`/home/quiz/${id}`)
+  })
   return (
     <Container maxW="container.xl" py={8}>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
