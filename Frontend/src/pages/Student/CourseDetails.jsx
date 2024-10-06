@@ -23,7 +23,7 @@ import {
 import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { getAssignments,  gradeAssignment, submitAssignment } from "../../APIRoutes/index.js"; 
+import { generateRoadmap, getAssignments, gradeAssignment, submitAssignment } from "../../APIRoutes/index.js";
 import { host } from "../../APIRoutes/index.js";
 import BarGraph from "../../components/bargraph.jsx";
 
@@ -38,7 +38,8 @@ export default function CoursePage() {
   const toast = useToast();
   const navigate = useNavigate();
   const selectedCourse = courses.find((course) => course._id === id);
-
+  const roadmap = selectedCourse?.roadmap ? selectedCourse.roadmap : [];
+  const [roadmaps, setRoadmaps] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [file, setFile] = useState(null);
   const [grades, setGrades] = useState({});
@@ -151,7 +152,7 @@ export default function CoursePage() {
         withCredentials: true,
       });
       console.log(response.data);
-      
+
       setStudentMarks(response.data.leaderboard);
       setHisto(true);
     } catch (error) {
@@ -307,9 +308,36 @@ export default function CoursePage() {
     }
   };
 
+  const handleGenerateRoadmap = async () => {
+    try {
+      const response = await axios.get(`${generateRoadmap}/${id}`, {
+        withCredentials: true
+      });
+      if (response.data.success) {
+        toast({
+          title: "Success",
+          description: "Roadmap generated",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+        setRoadmaps(response.data.roadmap);
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error",
+        description: "Failed to generate roadmap.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }
+
   return (
     <Container maxW="container.xl" py={8}>
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
+      <Box mb={8}>
         <VStack align="start" justify="center" spacing={4}>
           <Heading as="h1" size="2xl">
             {selectedCourse.name}
@@ -322,12 +350,15 @@ export default function CoursePage() {
             <Badge colorScheme="gray">Online</Badge>
           </HStack>
         </VStack>
-      </SimpleGrid>
+      </Box>
       <Button color={"teal"} onClick={() => handleTakeQuiz(id)} m={5}>
-        {user.role=='Teacher'?`Take Quiz`:'View Quiz'}
+        {user.role == 'Teacher' ? `Take Quiz` : 'View Quiz'}
       </Button>
-      {user.role=='Teacher' && <Button color={"teal"} onClick={() => handleGenerateQuiz()} m={5}>
+      {user.role == 'Teacher' && <Button color={"teal"} onClick={() => handleGenerateQuiz()} m={5}>
         Generate Quiz
+      </Button>}
+      {user.role == 'Teacher' && roadmaps.length === 0 && <Button color={"teal"} onClick={() => handleGenerateRoadmap()} m={5}>
+        Generate Roadmap
       </Button>}
       {/* Conditionally render the "Take Quiz" button */}
       {selectedCourse.name === "Sign Language" && (
@@ -341,9 +372,9 @@ export default function CoursePage() {
       )}
 
       {/* Assignments List */}
-      <Heading as="h2" size="xl" mt={12} mb={6}>
+      {assignments.length !== 0 && <Heading as="h2" size="xl" mt={12} mb={6}>
         Assignments
-      </Heading>
+      </Heading>}
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
         {assignments.map((item, index) => (
           <Card key={item._id} display="flex" flexDirection="column" height="100%">
@@ -494,7 +525,7 @@ export default function CoursePage() {
               <Button colorScheme="teal" onClick={handleCreateAssignment}>
                 Submit Assignment
               </Button>
-              <Button mx={2} colorScheme="teal" onClick={()=>{setShowAssignmentForm(false)}}>
+              <Button mx={2} colorScheme="teal" onClick={() => { setShowAssignmentForm(false) }}>
                 Back
               </Button>
             </Box>
@@ -507,12 +538,12 @@ export default function CoursePage() {
       )}
 
       {/* Leaderboard */}
-      <Heading as="h2" size="xl" mt={12} mb={6}>
+      {(roadmap.length !== 0 || roadmaps.length !== 0) && <Heading as="h2" size="xl" mt={12} mb={6}>
         Course Roadmap
-      </Heading>
+      </Heading>}
 
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-        {roadmapItems.map((item, index) => (
+      {roadmap.length !== 0 && <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+        {roadmap.map((item, index) => (
           <Card key={index}>
             <CardBody>
               <HStack mb={2}>
@@ -520,10 +551,26 @@ export default function CoursePage() {
                 <Heading size="md">{item.title}</Heading>
               </HStack>
               <Text color="gray.600">{item.description}</Text>
+              {user.role === "Teacher" && <Button colorScheme="teal">Upload Content</Button>}
             </CardBody>
           </Card>
         ))}
-      </SimpleGrid>
+      </SimpleGrid>}
+
+      {roadmaps.length !== 0 && <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+        {roadmaps.map((item, index) => (
+          <Card key={index}>
+            <CardBody>
+              <HStack mb={2}>
+                <Icon as={CheckCircleIcon} color="green.500" />
+                <Heading size="md">{item.title}</Heading>
+              </HStack>
+              <Text color="gray.600">{item.description}</Text>
+              {user.role === "Teacher" && <Button colorScheme="teal">Upload Content</Button>}
+            </CardBody>
+          </Card>
+        ))}
+      </SimpleGrid>}
 
       {!histo ? (
         <Button colorScheme="teal" className="my-4" onClick={handleLeaderBoard}>
@@ -545,57 +592,4 @@ export default function CoursePage() {
     </Container>
   );
 }
-
-const roadmapItems = [
-  {
-    title: "Introduction to Communication",
-    description:
-      "Understand the basics of communication, its components, and the different forms it takes in personal and professional settings.",
-  },
-  {
-    title: "Verbal Communication",
-    description:
-      "Learn how to articulate ideas clearly, improve speaking skills, and engage in effective conversations through active listening and proper tone.",
-  },
-  {
-    title: "Non-Verbal Communication",
-    description:
-      "Understand body language, facial expressions, gestures, and how non-verbal cues impact communication.",
-  },
-  {
-    title: "Public Speaking",
-    description:
-      "Learn techniques to speak confidently in front of an audience, structure presentations, and handle public speaking anxiety.",
-  },
-  {
-    title: "Interpersonal Communication",
-    description:
-      "Explore communication strategies for one-on-one and group interactions, including conflict resolution and relationship building.",
-  },
-  {
-    title: "Written Communication",
-    description:
-      "Improve writing skills for different contexts, including professional emails, reports, and other forms of business communication.",
-  },
-  {
-    title: "Persuasion and Influence",
-    description:
-      "Learn how to craft compelling messages, use storytelling, and apply persuasion techniques to influence and motivate others.",
-  },
-  {
-    title: "Cross-Cultural Communication",
-    description:
-      "Understand the challenges of communicating across cultures, and learn strategies for effective communication in diverse environments.",
-  },
-  {
-    title: "Communication in the Digital Age",
-    description:
-      "Explore the impact of technology on communication, including best practices for virtual meetings, social media communication, and remote work.",
-  },
-  {
-    title: "Feedback and Active Listening",
-    description:
-      "Learn how to give and receive constructive feedback and improve listening skills to enhance mutual understanding in conversations.",
-  },
-];
 
