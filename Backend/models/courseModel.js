@@ -61,6 +61,13 @@ const CourseSchema=new mongoose.Schema({
             }
         ],
         default: []
+    },
+    roadmap:{
+        type:[{
+            title:String,
+            description:String,
+        }],
+        default:[]
     }
 })
 
