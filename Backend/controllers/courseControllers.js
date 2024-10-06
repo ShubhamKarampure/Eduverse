@@ -167,7 +167,6 @@ export const getAllCoursesByBranchController = async (req, res) => {
 
 export const getAllCoursesByInstructor = async (req, res) => {
     try {
-        console.log(req.headers);
         const { instructorid } = req.headers
         const courses = await CourseModel.find({ instructor: instructorid })
         res.status(200).json({

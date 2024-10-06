@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { uploadOnCloud } from "../utils/cloudinary.js";
+import { deleteFromCloud, uploadOnCloud } from "../utils/cloudinary.js";
 
 export const signupController = async (req, res) => {
     try {
@@ -97,9 +97,14 @@ export const updateProfileController = async (req, res) => {
 
         let imageData = null;
 
+        const user=await UserModel.findById(id)
+
         if (req.files) {
+            if(user.image)
+            {const response =await deleteFromCloud(user.image.publicId)
+                console.log(response);
+            }
             const { image } = req.files;
-            console.log(image);
 
             const types = ['image/jpg', 'image/png', 'image/jpeg'];
             if (!types.includes(image.mimetype)) {
@@ -114,23 +119,28 @@ export const updateProfileController = async (req, res) => {
                 url: img.url,
                 publicId: img.public_id,
             };
+            user.image=imageData
         }
-
-        const updatedUser = await UserModel.findByIdAndUpdate(
-            id,
-            {
-                name,
-                email,
-                username,
-                ...(imageData && { image: imageData }), 
-            },
-            { new: true }
-        );
+        user.name=name
+        user.email=email
+        user.username=username
+        
+        user.save()
+        // const updatedUser = await UserModel.findByIdAndUpdate(
+        //     id,
+        //     {
+        //         name,
+        //         email,
+        //         username,
+        //         ...(imageData && { image: imageData }), 
+        //     },
+        //     { new: true }
+        // );
 
         return res.status(200).json({
             success: true,
             message: "User updated successfully",
-            user: updatedUser
+            user
         });
     } catch (error) {
         console.log(error);

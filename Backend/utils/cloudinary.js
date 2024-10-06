@@ -17,7 +17,6 @@ export const uploadOnCloud=async(localFilePath)=>{
         const response=await cloudinary.uploader.upload(localFilePath,{
             resource_type:"auto"
         })//uploads file to cloud
-        console.log(response);
         const {url,public_id}=response
         return {url,public_id}//returns url to controller
     } catch (error) {

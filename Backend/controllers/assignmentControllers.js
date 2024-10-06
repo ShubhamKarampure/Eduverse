@@ -5,6 +5,7 @@ import { deleteFromCloud } from "../utils/cloudinary.js";
 import dotenv from 'dotenv'
 import axios from 'axios'
 import { request } from "express";
+import { UserModel } from "../models/userModel.js";
 dotenv.config()
 
 export const createAssignmentController = async (req, res) => {
@@ -198,3 +199,58 @@ export const gradeAssignmentController = async (req, res) => {
         });
     }
 }
+
+export const getAssignmentByStudent = async (req, res) => {
+    try {
+        const studentId = req.params.id;
+        const student = await UserModel.findById(studentId);
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student not found',
+            });
+        }
+
+        let deadlines = [];
+
+        // Loop over each enrolled course
+        for (let i = 0; i < student.enrolledCourses.length; i++) {
+            const courseId = student.enrolledCourses[i];
+            const course = await CourseModel.findById(courseId);
+
+            if (course) {
+                // Loop over each assignment in the course
+                for (let j = 0; j < course.assignments.length; j++) {
+                    const assignmentId = course.assignments[j];
+                    const assignment = await AssignmentModel.findById(assignmentId);
+
+                    if (assignment) {
+                        // Check if the student has submitted this assignment
+                        const hasSubmitted = assignment.submissions.some(submission => submission.student == studentId);
+
+                        // Add to the deadlines array with both deadline and submitted status
+                        deadlines.push({
+                            deadline: assignment.deadline,
+                            submitted: hasSubmitted,
+                        });
+                    }
+                }
+            }
+        }
+
+        // Send the response with all deadlines and submission statuses
+        res.status(200).json({
+            success: true,
+            message: 'Assignments Fetched',
+            deadlines
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+        });
+    }
+};

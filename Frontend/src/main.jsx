@@ -19,6 +19,7 @@ import LandingPage from "./pages/landingPage.jsx";
 import Blog from "./pages/Blog.jsx";
 import TeacherCourse from './components/TeacherCourse.jsx'
 import SignLanguageCourse from "./pages/SignLangugae/signLangCoursePage.jsx";
+import AssignmentCalendar from "./pages/Student/Calendar.jsx";
 
 const router = createBrowserRouter([
   {
@@ -41,7 +42,7 @@ const router = createBrowserRouter([
         element: <MyCourses />,
       },{
         path: "calendar",
-        element: <Calendar/>
+        element: <AssignmentCalendar/>
       }, {
         path: 'quiz/:id',
         element: <Quiz />

@@ -7,7 +7,7 @@ const router=express.Router()
 
 router.route('/signup').post(signupController)
 router.route('/login').post(loginController)
-router.route('/:id').patch(fileUpload({
+router.route('/update/:id').patch(fileUpload({
     useTempFiles: true,
     tempFileDir: 'C:/Windows/Temp'
 }),updateProfileController)

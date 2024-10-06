@@ -1,2 +1,6 @@
 tempFiles
 .pyc
+
+_pycache_
+
+env_name

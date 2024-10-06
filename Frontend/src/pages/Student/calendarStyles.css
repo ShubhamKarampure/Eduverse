@@ -61,3 +61,14 @@
   .deadline-calendar .text-gray-500 {
     color: #9ca3af;
   }
+
+  /* index.css or global css */
+.react-calendar__tile.submitted {
+  background-color: #22c55e; /* Tailwind's green-500 */
+  color: white;
+}
+
+.react-calendar__tile.unsubmitted {
+  background-color: #ef4444; /* Tailwind's red-500 */
+  color: white;
+}
