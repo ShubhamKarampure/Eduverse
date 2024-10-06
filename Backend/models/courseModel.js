@@ -63,10 +63,10 @@ const CourseSchema=new mongoose.Schema({
         default: []
     },
     roadmap:{
-        type:{
+        type:[{
             title:String,
             description:String,
-        },
+        }],
         default:[]
     }
 })
