@@ -161,7 +161,7 @@ export default function CoursePage() {
       {selectedCourse.name === "Sign Language" && (
         <Button
           color={"teal"}
-          onClick={() => window.open("http://localhost:8501/", "_blank")}
+          onClick={() => window.open("http://localhost:8502/")}
           m={5}
         >
           Learn
