@@ -40,7 +40,7 @@ const DeadlineCalendar = memo(() => {
     };
 
     fetchAssignments();
-  }, [user]);
+  }, []);
 
   const tileClassName = ({ date, view }) => {
     if (view !== 'day') return null;
@@ -53,7 +53,6 @@ const DeadlineCalendar = memo(() => {
       classes.push('today');
     }
 
-    // Check if the date matches any assignment deadline
     if (assignments.some((assignment) => new Date(assignment).toDateString() === date.toDateString())) {
       console.log(assignments.toDateString());
       classes.push('assignment-date');

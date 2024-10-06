@@ -33,9 +33,12 @@ const Quiz = () => {
     fetchQuiz();
   }, []);
 
-  console.log(quizData);  
+  console.log(quizData);
 
   const handleOptionClick = (option) => {
+   if(user.role==='Teacher'){
+    return
+   }
     setSelectedOption(option);
 
     const updatedAnswers = [...userAnswers];
@@ -117,7 +120,7 @@ const Quiz = () => {
     setScore(0); // Reset score
   };
 
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   return (
     <>
@@ -142,7 +145,7 @@ const Quiz = () => {
                   </h3>
                 </div>
 
-                {quizData.map((question, index,answer) => (
+                {quizData.map((question, index, answer) => (
                   <div key={index} className="mb-6">
                     <h3 className="text-lg font-semibold">
                       Q{index + 1}. {question.question}
@@ -187,13 +190,22 @@ const Quiz = () => {
                       (key) => (
                         <div
                           key={key}
-                          className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                          className={`p-4 border rounded-lg transition-colors  
+                            ${
+                              user.role==='Student'?"cursor-pointer":""
+                            }${
+                            user.role === "Teacher" &&
+                            quizData[currentQuestion].answer === key
+                              ? "bg-green-400 text-black"
+                              : ""
+                          } ${
                             selectedOption === key
                               ? "bg-blue-500 text-white"
-                              : "bg-gray-200 hover:bg-gray-300"
-                          }`}
+                              :  `bg-gray-200 ${user.role==='Teacher'?"":"hover:bg-gray-300 cursor-default"}`
+                          } `}
                           onClick={() => handleOptionClick(key)}
                         >
+                          {console.log(key)}
                           {quizData[currentQuestion].options[key]}
                         </div>
                       )
@@ -214,29 +226,31 @@ const Quiz = () => {
                     </button>
 
                     {currentQuestion === quizData.length - 1 ? (
-                        user.role === 'Student' ? (
-                          <button
-                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                            onClick={handleSubmit}
-                          >
-                            Submit
-                          </button>
-                        ) : (
-                          <button
-                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                            onClick={()=>{navigate(`/home/course-details/${id}`)}}
-                          >
-                            Return to course
-                          </button>
-                        )
+                      user.role === "Student" ? (
+                        <button
+                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                          onClick={handleSubmit}
+                        >
+                          Submit
+                        </button>
                       ) : (
                         <button
-                          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                          onClick={handleNext}
+                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                          onClick={() => {
+                            navigate(`/home/course-details/${id}`);
+                          }}
                         >
-                          Next
+                          Return to course
                         </button>
-                      )}
+                      )
+                    ) : (
+                      <button
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        onClick={handleNext}
+                      >
+                        Next
+                      </button>
+                    )}
                   </div>
                 </>
               )
