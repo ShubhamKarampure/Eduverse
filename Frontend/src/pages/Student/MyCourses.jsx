@@ -12,13 +12,14 @@ const MyCourses = () => {
 
     // Set courses from localStorage or fetch from API
     useEffect(() => {
-        const storedCourses = JSON.parse(localStorage.getItem('student-courses')) || [];
+        const storedCourses = JSON.parse(localStorage.getItem(user.role==='Student'?'student-courses':'teacher-courses')) || [];
+        console.log(storedCourses)
         setCourses(storedCourses);
 
         // Filter enrolled courses
         const filteredEnrolledCourses = storedCourses.filter(course => course.students.includes(id));
         setEnrolledCourses(filteredEnrolledCourses);
-    }, [id]);
+    }, []);
 
     // Reference for the scrollable container
     const carouselRef = useRef(null);

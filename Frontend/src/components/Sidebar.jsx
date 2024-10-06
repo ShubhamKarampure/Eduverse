@@ -6,7 +6,7 @@ import {
 } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { MdAssignment } from "react-icons/md";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaBlog, FaCalendarAlt } from "react-icons/fa";
 import { MdOutlineMenuBook } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -45,10 +45,11 @@ const Sidebar = () => {
                         open={open}
                     />
                 </Link>
-                <Link>
+                
+                <Link to={user.role==='Student'?'/home':'/home/teacher-add-course'}>
                     <Option
                         Icon={MdAssignment}
-                        title="Assignments"
+                        title={user.role==='Student'?'Assignments':'Add Courses'}
                         selected={selected}
                         setSelected={setSelected}
                         open={open}
@@ -69,7 +70,16 @@ const Sidebar = () => {
                 <Link to={'/home/calendar'}>
                     <Option
                         Icon={FaCalendarAlt}
-                        title="Calender"
+                        title="Calendar"
+                        selected={selected}
+                        setSelected={setSelected}
+                        open={open}
+                    />
+                </Link>
+                <Link to={'/home/blog'}>
+                    <Option
+                        Icon={FaBlog}
+                        title="Blog"
                         selected={selected}
                         setSelected={setSelected}
                         open={open}
@@ -151,7 +161,7 @@ const TitleSection = ({ open }) => {
                             transition={{ delay: 0.125 }}
                         >
                             <span className="block text-xs font-semibold text-black">EduVerse</span>
-                            <span className="block text-xs text-black">Pro Plan</span>
+                           
                         </motion.div>
                     )}
                 </div>
@@ -183,6 +193,7 @@ const Logo = () => {
                 <path
                     d="M17.4224 27.102L11.4192 36H33.5008L49 13.0271H32.7024L23.2064 27.102H17.4224Z"
                     stopColor="#000000"
+                    
                 ></path>
             </svg>
         </motion.div>

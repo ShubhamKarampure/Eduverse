@@ -1,6 +1,6 @@
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
 import {
   useToast,
   AlertDialog,
@@ -29,7 +29,14 @@ const SquishyCard = ({
 }) => {
   return (
     <section className="px-4 py-12">
-      <div className="mx-auto w-fit">
+      <motion.div
+        className="carousel-container"
+        style={{ display: "flex", overflow: "hidden", cursor: "grab" }} // Set overflow to hidden
+        whileTap={{ cursor: "grabbing" }}
+        drag="x"
+        dragConstraints={{ left: -300, right: 300 }}
+        dragElastic={0.2}
+      >
         <Card
           name={name}
           branch={branch}
@@ -40,7 +47,8 @@ const SquishyCard = ({
           enrollmentKey={enrollmentKey}
           background={background}
         />
-      </div>
+        {/* Add more cards as needed */}
+      </motion.div>
     </section>
   );
 };
@@ -52,24 +60,17 @@ const Card = ({
   studentId,
   students = [],
   courseId,
-  background
+  background=''
 }) => {
   const navigate = useNavigate();
   const toast = useToast();
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // Check if the user is enrolled
-  const isEnrolled = students.includes(studentId);
-
-  // State for handling the enrollment dialog
+  const [isEnrolled, setIsEnrolled] = useState(students.includes(studentId));
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef();
-
-  // Form state for user inputs
   const [formData, setFormData] = useState({ key: "" });
-
-  // Track enrollment success and loading state
   const [enrollmentSuccess, setEnrollmentSuccess] = useState(isEnrolled);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -94,20 +95,14 @@ const Card = ({
         courseId: courseId,
       })
       .then((response) => {
-        console.log(response)
         if (response.status === 201) {
-          console.log("Enrollment success");
-
-          // Show toast here before updating state
           toast({
             title: "Enrollment Success",
             description: "You have successfully enrolled.",
             status: "success",
-            duration: 5000, // Extended duration for testing
+            duration: 5000,
             isClosable: true,
           });
-
-          // Set the enrollment status
           setEnrollmentSuccess(true);
           setIsOpen(false);
           // Close dialog on successful enrollment
@@ -123,7 +118,8 @@ const Card = ({
           duration: 9000,
           isClosable: true,
         });
-      }).finally(() => setIsLoading(false))
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -140,6 +136,7 @@ const Card = ({
           },
         }}
         className="relative h-96 w-80 shrink-0 overflow-hidden rounded-xl bg-indigo-500 p-8"
+        style={{ marginRight: '20px' }} // Add some margin for spacing
       >
         <div
           className="absolute inset-0"
@@ -230,7 +227,6 @@ const Card = ({
     </>
   );
 };
-
 
 const Background = () => {
   return (

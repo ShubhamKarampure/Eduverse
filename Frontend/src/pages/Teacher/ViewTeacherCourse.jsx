@@ -23,6 +23,8 @@ const ViewTeacherCourse = () => {
           }
         });
         if (response.data.success) {
+          // console.log(response.data.courses);
+          
           setCourses(response.data.courses);
           localStorage.setItem('teacher-courses', JSON.stringify(response.data.courses));
         }
@@ -65,6 +67,7 @@ const ViewTeacherCourse = () => {
                 description={course.description}
                 branch={course.branch}
                 key={index}
+                id={course._id}
               />
             );
           })}

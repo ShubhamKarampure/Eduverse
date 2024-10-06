@@ -14,12 +14,17 @@ import Calendar from "./pages/Student/Calendar.jsx";
 import Quiz from "./pages/Student/Quiz.jsx";
 import ProfilePage from "./pages/Student/Profile.jsx";
 import CoursePage from "./pages/Student/CourseDetails.jsx";
+import TeacherProfile from "./components/TeacherProfile.jsx";
 import LandingPage from "./pages/landingPage.jsx";
+import Blog from "./pages/Blog.jsx";
+import TeacherCourse from './components/TeacherCourse.jsx'
+import SignLanguageCourse from "./pages/SignLangugae/signLangCoursePage.jsx";
 
 const router = createBrowserRouter([
   {
     path:"/",
-    element:<LandingPage/>
+    element:<LandingPage/>,
+    errorElement: <PageNotFound/>
   },
   {
     path: "/home",
@@ -46,6 +51,18 @@ const router = createBrowserRouter([
       }, {
         path: 'course-details/:id',
         element: <CoursePage />
+      },{
+        path: 'teacherProfile',
+        element:<TeacherProfile/>
+      },{
+        path: 'blog',
+        element: <Blog/>
+      },{
+        path: '/home/teacher-add-course',
+        element: <TeacherCourse/>
+      },{
+        path:'signLanguage',
+        element: <SignLanguageCourse/>
       }
     ],
     errorElement: <PageNotFound />

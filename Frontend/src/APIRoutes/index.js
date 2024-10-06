@@ -1,4 +1,4 @@
-const host = "http://localhost:4000/api/v1/user"
+export const host = "http://localhost:4000/api/v1/user"
 
 export const signupRoute = `${host}/signup`
 export const loginRoute = `${host}/login`
@@ -10,3 +10,5 @@ export const getAssignments = `${host}/assignments`
 export const submitAssignment = `${host}/student/assignment`
 export const submitQuiz = `${host}/student/quiz`
 export const gradeAssignment = `${host}/teacher/assignment`
+
+export const flaskApi='http://localhost:5000'

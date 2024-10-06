@@ -333,6 +333,64 @@ export const getCourseById = async (req, res) => {
         })
     }
 }
+export const getLeaderboard = async (req, res) => {
+    try {
+        const courseId = req.params.id;
+        const course = await CourseModel.findById(courseId);
+        // Initialize leaderboard with students and marks set to 0
+        let leaderboard = [];
+        for (let i = 0; i < course.students.length; i++) {
+            let student = course.students[i];
+            const Student = await UserModel.findById(student);
+            leaderboard.push({ name: Student.name, student: student, marks: 0 });
+        }
+        // Loop through assignments
+        for (let i = 0; i < course.assignments.length; i++) {
+            let assignment = await AssignmentModel.findById(course.assignments[i]);
+            // Ensure the assignment has submissions
+            if (!assignment.submissions) continue;
+            // Debug: Log the assignment and its submissions
+            console.log('Processing assignment:', assignment._id);
+            console.log('Submissions:', assignment.submissions);
+            // Loop through submissions in each assignment
+            for (let j = 0; j < assignment.submissions.length; j++) {
+                let submission = assignment.submissions[j];
+                // Ensure the submission has a student field and a grade
+                if (!submission || !submission.student || !submission.grade) {
+                    console.log(`Invalid submission:`, submission);
+                    continue;
+                }
+                // Debug: Log each submission student and grade
+                console.log(`Submission student ID: ${submission.student}, Grade: ${submission.grade}`);
+                // Find the student in the leaderboard by comparing their ID
+                let index = leaderboard.findIndex((entry) => 
+                    entry.student.toString() == submission.student.toString()
+                );
+                // Ensure student is found in the leaderboard
+                if (index !== -1) {
+                    leaderboard[index].marks += submission.grade;  // Add the student's grade to their total marks
+                    console.log(`Updated marks for student ${submission.student}: ${leaderboard[index].marks}`);
+                } else {
+                    console.log(`Student not found in leaderboard: ${submission.student.toString()}`);
+                }
+            }
+        }
+        // Return the leaderboard
+        res.status(200).json({
+            success: true,
+            message: "Leaderboard generated",
+            leaderboard
+        });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+}
+
 
 
 

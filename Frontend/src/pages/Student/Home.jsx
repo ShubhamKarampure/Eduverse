@@ -10,7 +10,9 @@ const Home = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       if (user.role.toLowerCase() === "teacher") {
-        navigate("/teacher");
+        navigate("home/teacher");
+      }else{
+        navigate('/home')
       }
     } else {
       navigate("/login");

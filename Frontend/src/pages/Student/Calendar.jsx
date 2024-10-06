@@ -49,12 +49,14 @@ const DeadlineCalendar = memo(() => {
 
     // Check if the date is today
     if (date.toDateString() === new Date().toDateString()) {
-      classes.push('bg-teal-200 rounded-full'); // Today's date highlight
+
+      classes.push('today');
     }
 
     // Check if the date matches any assignment deadline
     if (assignments.some((assignment) => new Date(assignment).toDateString() === date.toDateString())) {
-      classes.push('bg-yellow-200 rounded-full'); // Assignment date highlight
+      console.log(assignments.toDateString());
+      classes.push('assignment-date');
     }
 
     return classes.join(' ');
