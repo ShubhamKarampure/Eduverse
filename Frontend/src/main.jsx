@@ -10,7 +10,6 @@ import Courses from "./pages/Student/Courses.jsx";
 import Register from "./pages/Auth/Register.jsx";
 import Login from "./pages/Auth/Login.jsx";
 import MyCourses from "./pages/Student/MyCourses.jsx";
-import Calendar from "./pages/Student/Calendar.jsx";
 import Quiz from "./pages/Student/Quiz.jsx";
 import ProfilePage from "./pages/Student/Profile.jsx";
 import CoursePage from "./pages/Student/CourseDetails.jsx";
@@ -19,13 +18,13 @@ import LandingPage from "./pages/landingPage.jsx";
 import Blog from "./pages/Blog.jsx";
 import TeacherCourse from './components/TeacherCourse.jsx'
 import SignLanguageCourse from "./pages/SignLangugae/signLangCoursePage.jsx";
-import AssignmentCalendar from "./pages/Student/Calendar.jsx";
+import ChakraCalendar from "./pages/Student/Calendar.jsx";
 
 const router = createBrowserRouter([
   {
-    path:"/",
-    element:<LandingPage/>,
-    errorElement: <PageNotFound/>
+    path: "/",
+    element: <LandingPage />,
+    errorElement: <PageNotFound />,
   },
   {
     path: "/home",
@@ -33,55 +32,61 @@ const router = createBrowserRouter([
     children: [
       {
         path: "teacher",
-        element: <ViewTeacherCourse />
-      }, {
+        element: <ViewTeacherCourse />,
+      },
+      {
         path: "",
         element: <Courses />,
-      }, {
+      },
+      {
         path: "mycourses",
         element: <MyCourses />,
-      },{
+      },
+      {
         path: "calendar",
-        element: <AssignmentCalendar/>
-      }, {
-        path: 'quiz/:id',
-        element: <Quiz />
-      }, {
-        path: 'profile',
-        element: <ProfilePage />
-      }, {
-        path: 'course-details/:id',
-        element: <CoursePage />
-      },{
-        path: 'teacherProfile',
-        element:<TeacherProfile/>
-      },{
-        path: 'blog',
-        element: <Blog/>
-      },{
-        path: '/home/teacher-add-course',
-        element: <TeacherCourse/>
-      },{
-        path:'signLanguage',
-        element: <SignLanguageCourse/>
-      }
+        element: <ChakraCalendar />,
+      },
+      {
+        path: "quiz/:id",
+        element: <Quiz />,
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
+      },
+      {
+        path: "course-details/:id",
+        element: <CoursePage />,
+      },
+      {
+        path: "teacherProfile",
+        element: <TeacherProfile />,
+      },
+      {
+        path: "blog",
+        element: <Blog />,
+      },
+      {
+        path: "/home/teacher-add-course",
+        element: <TeacherCourse />,
+      },
+      {
+        path: "signLanguage",
+        element: <SignLanguageCourse />,
+      },
     ],
-    errorElement: <PageNotFound />
+    errorElement: <PageNotFound />,
   },
   {
     path: "/register",
     element: <Register />,
-    children: [
-
-    ],
+    children: [],
     errorElement: <PageNotFound />,
   },
   {
     path: "/login",
     element: <Login />,
-    children: [
-
-    ],
+    children: [],
     errorElement: <PageNotFound />,
   },
 ]);
